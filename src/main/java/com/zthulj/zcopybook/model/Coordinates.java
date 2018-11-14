@@ -1,8 +1,9 @@
 package com.zthulj.zcopybook.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public final class Coordinates {
+public final class Coordinates implements Serializable {
     private final int start;
     private final int end;
 

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zthulj.zcopybook.model.Coordinates;
 import com.zthulj.zcopybook.model.Node;
+import com.zthulj.zcopybook.model.ParentNode;
+import com.zthulj.zcopybook.model.ValueNode;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -20,25 +22,27 @@ public class NodeSerializerTest {
 
     @Test
     public void serialize_childNode_shouldReturnValue() throws JsonProcessingException {
-        Node<String> parent = Node.createRootNode();
-        Node<String> child = Node.createChildNode(parent, "myValue", null);
+        ParentNode<String> parent = Node.createRootNode();
+        ValueNode<String> child = Node.createValueNode(parent, null);
+        child.setValue("myValue");
         String result = objectMapper.writeValueAsString(child);
         Assert.assertEquals("\"myValue\"", result);
     }
 
     @Test
     public void serialize_rootNodeParentChild_shouldReturnJsonWithEmptyChild() throws JsonProcessingException {
-        Node<String> root = Node.createRootNode();
-        root.addParentNode("parentName", null);
+        ParentNode<String> root = Node.createRootNode();
+        root.addParentNode("parentName", 0);
         String result = objectMapper.writeValueAsString(root);
         Assert.assertEquals("{\"parentName\":{}}", result);
     }
 
     @Test
     public void serialize_rootNodeParentChildWithOneChildValue_shouldReturnJsonWithChild() throws JsonProcessingException {
-        Node<String> root = Node.createRootNode();
-        Node<String> parent = root.addParentNode("parentName", null);
-        parent.addChildNode("aValueChild","theValue", null);
+        ParentNode<String> root = Node.createRootNode();
+        ParentNode<String> parent = root.addParentNode("parentName", 0);
+        ValueNode<String> child = parent.addValueNode("aValueChild", null);
+        child.setValue("theValue");
         String result = objectMapper.writeValueAsString(root);
         Assert.assertEquals("{\"parentName\":{\"aValueChild\":\"theValue\"}}", result);
     }

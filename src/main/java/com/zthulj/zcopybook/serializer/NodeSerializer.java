@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.zthulj.zcopybook.model.Node;
+import com.zthulj.zcopybook.model.ParentNode;
+import com.zthulj.zcopybook.model.ValueNode;
 
 import java.io.IOException;
 
@@ -18,10 +20,10 @@ public class NodeSerializer<T> extends JsonSerializer<Node<T>> {
     }
 
     public void serializeParent(Node<T> value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            gen.writeObject(value.getChilds());
+            gen.writeObject(((ParentNode)value).getChilds());
     }
 
     public void serializeChild(Node<T> value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        gen.writeString(value.getValue().toString());
+        gen.writeString(((ValueNode)value).getValue().toString());
     }
 }

@@ -1,7 +1,9 @@
 package com.zthulj.zcopybook.converter;
 
 
+import com.zthulj.zcopybook.model.Coordinates;
 import com.zthulj.zcopybook.model.Node;
+import com.zthulj.zcopybook.model.ParentNode;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +19,11 @@ import java.util.regex.Pattern;
 public final class ZConverter {
 
     private static Logger logger = LoggerFactory.getLogger(ZConverter.class);
-    Pattern nodePattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)");
 
+    private final Pattern nodePattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)");
+    private final Pattern simpleValuePattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)( {1})([^ ]*?)( {1})([^ ]*)");
+
+    private final Pattern picX_n_Pattern =  Pattern.compile("([^\\(]*?)(\\({1})([^\\)]*?)(\\){1})");
 
     /**
      *
@@ -57,25 +62,44 @@ public final class ZConverter {
         if (null == copybook)
             throw new IllegalArgumentException("copybook can't be null !");
 
-
         if (logger.isDebugEnabled())
             logger.debug(String.format("Started the conversion of the copybook : \n[\n%s\n]",copybook));
 
         String cleanedCopybook = cleanCopybook(copybook);
 
-        Node node = Node.createRootNode();
-        Node lastParent = null;
+        ParentNode node = Node.createRootNode();
+        ParentNode lastParent = node;
+        int nextStart = 0;
         String[] array = cleanedCopybook.split("\\.");
         for (String line : array) {
-            line = line.trim().replaceAll(" +", " ");
 
             Matcher nodeMatcher = nodePattern.matcher(line);
 
-            if(nodeMatcher.matches())
-                node.addParentNode(nodeMatcher.group(3), nodeMatcher.group(1));
+            if(nodeMatcher.matches()) {
+                int newLevelNb = Integer.parseInt(nodeMatcher.group(1));
+                while(newLevelNb <= lastParent.getLevelNumber()){
+                    lastParent = lastParent.getParent();
+                }
+                lastParent = lastParent.addParentNode(nodeMatcher.group(3), newLevelNb);
+            }
+
+            Matcher valueMatcher = simpleValuePattern.matcher(line);
+            if(valueMatcher.matches()) {
+                int fieldSize = calculateFieldSize(valueMatcher.group(7));
+                lastParent.addValueNode(valueMatcher.group(3), Coordinates.from(nextStart, nextStart + fieldSize - 1));
+                nextStart += fieldSize;
+            }
         }
 
         return node;
+    }
+
+    private int calculateFieldSize(String data) {
+        Matcher picX = picX_n_Pattern.matcher(data);
+        if(picX.matches())
+            return Integer.parseInt(picX.group(3));
+
+        return 0;
     }
 
     private String cleanCopybook(String copybook) {
@@ -84,13 +108,14 @@ public final class ZConverter {
             line = line.trim();
             if(lineShouldBeIgnored(line))
                 continue;
-            result += line;
+            result += line.replaceAll(" +"," ");
         }
         return result;
     }
 
     private boolean lineShouldBeIgnored(String line) {
-        boolean shouldBeIgnored = line.startsWith("*");
+        boolean shouldBeIgnored =
+                line.startsWith("*") || line.startsWith("88");
 
         if (shouldBeIgnored && logger.isDebugEnabled())
             logger.debug("Ignoring line : " + line);

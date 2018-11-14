@@ -3,87 +3,53 @@ package com.zthulj.zcopybook.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zthulj.zcopybook.serializer.NodeSerializer;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 @JsonSerialize(using = NodeSerializer.class)
-public final class Node<T> {
-    private HashMap<String,Node<T>> childs;
-    private Node<T> parent;
-    private String levelNumber;
-    private T value;
-    private Coordinates coordinates;
+public abstract class Node<T> implements Serializable {
+    private ParentNode<T> parent;
 
-    private Node(HashMap<String,Node<T>> childs, Node<T> parent, T value, String levelNumber, Coordinates coordinates) {
-        this.childs = childs;
+    protected Node(ParentNode<T> parent) {
         this.parent = parent;
-        this.value = value;
-        this.levelNumber = levelNumber;
-        this.coordinates = coordinates;
     }
 
-    public static <T> Node<T> createRootNode() {
-      return new Node(new HashMap<>(), null, null, "", null);
+    public static <T> ParentNode<T> createRootNode() {
+        return new ParentNode<T>(null, new HashMap(), 0);
     }
 
-    public static <T> Node<T> createParentNode(Node<T> parent, String indentation) {
-        return new Node(new HashMap<>(), parent, null, indentation, null);
+    public static <T> ParentNode<T> createParentNode(ParentNode<T> parent, int lvlNumber) {
+        return new ParentNode<T>(parent, new HashMap(), lvlNumber);
     }
 
-    public static <T>  Node<T> createChildNode(Node<T> parent, T value, Coordinates coords) {
-        return new Node(null, parent, value, null, coords);
+    public static <T>  ValueNode<T> createValueNode(ParentNode<T> parent, Coordinates coords) {
+        return new ValueNode(parent, coords);
     }
 
-    public Node<T> addParentNode(String nodeName, String indentation) {
-        Node newParent = Node.createParentNode(this, indentation);
-        this.getChilds().put(nodeName,newParent);
-        return newParent;
+    public static <T> List<Node<T>> createParentNodeArray(Node<Object> root, int lvlNumber, int occursNumber) {
+        return null;
     }
 
-    public Node<T> addChildNode(String nodeName, T value, Coordinates coords) {
-        Node newChild = Node.createChildNode(this, value, coords);
-        this.getChilds().put(nodeName, newChild);
-        return newChild;
-    }
-
-    public HashMap<String,Node<T>> getChilds() {
-        return childs;
-    }
-
-    public Node<T> getParent() {
+    public ParentNode<T> getParent() {
         return parent;
     }
 
-    public T getValue() {
-        return value;
-    }
+    public abstract boolean isParent();
 
-    public boolean isParent() {
-        return childs != null && value == null;
-    }
-
-    public String getLevelNumber() {
-        return levelNumber;
-    }
-
-    public Coordinates getCoordinates() {
-        return coordinates;
-    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Node)) return false;
         Node<?> node = (Node<?>) o;
-        return Objects.equals(getChilds(), node.getChilds()) &&
-                Objects.equals(isParent(), node.isParent()) &&
-                Objects.equals(getLevelNumber(), node.getLevelNumber()) &&
-                Objects.equals(getValue(), node.getValue()) &&
-                Objects.equals(getCoordinates(), node.getCoordinates());
+        return Objects.equals(isParent(), node.isParent());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getChilds(), isParent(), getLevelNumber(), getValue(), getCoordinates());
+        return Objects.hash(isParent());
     }
 }
