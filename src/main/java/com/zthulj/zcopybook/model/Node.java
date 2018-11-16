@@ -26,7 +26,7 @@ public abstract class Node<T> implements Serializable {
         return new ValueNode(parent, coords);
     }
 
-    public static <T> ParentArrayNode<T> createParentNodeArray(ParentNode<Object> parent, int lvlNumber, int occursNumber) {
+    public static <T> ParentArrayNode<T> createParentNodeArray(ParentNode<T> parent, int lvlNumber, int occursNumber) {
         return new ParentArrayNode(parent, lvlNumber, occursNumber);
     }
 

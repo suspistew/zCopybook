@@ -25,6 +25,12 @@ public class ParentNode<T> extends Node<T> {
         return newChild;
     }
 
+    public ParentArrayNode<T> addParentArrayNode(String nodeName, int lvlNumber, int occursNumber) {
+        ParentArrayNode newParent = Node.createParentNodeArray(this, lvlNumber, occursNumber);
+        this.getChilds().put(nodeName, newParent);
+        return newParent;
+    }
+
     public LinkedHashMap<String, Node<T>> getChilds() {
         return childs;
     }
