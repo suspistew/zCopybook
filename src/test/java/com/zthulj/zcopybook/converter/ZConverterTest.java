@@ -103,6 +103,13 @@ public class ZConverterTest {
 
     }
 
+    public void convert_ParentWithOccurs_shouldReturnModelWithOccurs() throws IOException {
+        Node node = converter.convert(fileFromResource("copybook/oneParentWithOccurs.cbl"));
+        ParentNode rootExpected = Node.createRootNode();
+
+
+    }
+
     private File fileFromResource(String path){
         return new File(getClass().getClassLoader().getResource(path).getFile());
     }

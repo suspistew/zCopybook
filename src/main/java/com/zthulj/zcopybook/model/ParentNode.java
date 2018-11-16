@@ -1,13 +1,13 @@
 package com.zthulj.zcopybook.model;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 
 public class ParentNode<T> extends Node<T> {
-    private HashMap<String,Node<T>> childs;
-    private int levelNumber;
+    private LinkedHashMap<String,Node<T>> childs;
+    protected int levelNumber;
 
-    public ParentNode(ParentNode<T> parent, HashMap<String, Node<T>> childs, int levelNumber) {
+    public ParentNode(ParentNode<T> parent, LinkedHashMap<String, Node<T>> childs, int levelNumber) {
         super(parent);
         this.childs = childs;
         this.levelNumber = levelNumber;
@@ -25,7 +25,7 @@ public class ParentNode<T> extends Node<T> {
         return newChild;
     }
 
-    public HashMap<String, Node<T>> getChilds() {
+    public LinkedHashMap<String, Node<T>> getChilds() {
         return childs;
     }
 
