@@ -1,8 +1,13 @@
 package com.zthulj.zcopybook.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.zthulj.zcopybook.factory.NodeFactory;
+import com.zthulj.zcopybook.serializer.ParentNodeSerializer;
+
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
+@JsonSerialize(using = ParentNodeSerializer.class)
 public class ParentNode<T> extends Node<T> {
     private LinkedHashMap<String,Node<T>> childs;
     protected int levelNumber;
@@ -13,22 +18,43 @@ public class ParentNode<T> extends Node<T> {
         this.levelNumber = levelNumber;
     }
 
-    public ParentNode<T> addParentNode(String nodeName, int lvlNumber) {
-        ParentNode newParent = Node.createParentNode(this, lvlNumber);
-        this.getChilds().put(nodeName,newParent);
+    public void addChild(Node child, String name) {
+        this.getChilds().put(getFinalName(name),child);
+    }
+
+    public ParentNode<T> addChildOfTypeParentNode(String nodeName, int lvlNumber) {
+        String name = getFinalName(nodeName);
+        ParentNode newParent = NodeFactory.createParentNode(this, lvlNumber);
+        this.getChilds().put(name,newParent);
         return newParent;
     }
 
-    public ValueNode<T> addValueNode(String nodeName, Coordinates coords) {
-        ValueNode newChild = Node.createValueNode(this, coords);
-        this.getChilds().put(nodeName, newChild);
+
+
+    public ValueNode<T> addChildOfTypeValueNode(String nodeName, Coordinates coords) {
+        return addChildOfTypeValueNode(nodeName, coords, ValueNode.ValueType.STRING);
+    }
+
+    public ValueNode<T> addChildOfTypeValueNode(String nodeName, Coordinates coords, ValueNode.ValueType type) {
+        String name = getFinalName(nodeName);
+        ValueNode newChild = NodeFactory.createValueNode(this, coords, type);
+        this.getChilds().put(name, newChild);
         return newChild;
     }
 
-    public ParentArrayNode<T> addParentArrayNode(String nodeName, int lvlNumber, int occursNumber) {
-        ParentArrayNode newParent = Node.createParentNodeArray(this, lvlNumber, occursNumber);
-        this.getChilds().put(nodeName, newParent);
+    public ParentArrayNode<T> addChildOfTypeParentArrayNode(String nodeName, int lvlNumber, int occursNumber) {
+        String name = getFinalName(nodeName);
+        ParentArrayNode newParent = NodeFactory.createParentNodeArray(this, lvlNumber, occursNumber);
+        this.getChilds().put(name, newParent);
         return newParent;
+    }
+
+    private String getFinalName(String nodeName) {
+        String name = nodeName;
+        int i = 1;
+        while(this.getChilds().containsKey(name))
+            name = nodeName + (++i);
+        return name;
     }
 
     public LinkedHashMap<String, Node<T>> getChilds() {

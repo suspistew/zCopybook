@@ -1,5 +1,8 @@
 package com.zthulj.zcopybook.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.zthulj.zcopybook.factory.NodeFactory;
+import com.zthulj.zcopybook.serializer.ParentArrayNodeSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,6 +10,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
+@JsonSerialize(using = ParentArrayNodeSerializer.class)
 public class ParentArrayNode<T> extends ParentNode<T> {
     private static Logger logger = LoggerFactory.getLogger(ParentArrayNode.class);
 
@@ -15,14 +19,13 @@ public class ParentArrayNode<T> extends ParentNode<T> {
         if (occursNumber < 1)
             throw new IllegalArgumentException("OccursNumber can't be less than 1");
 
-        array = new ParentNode[occursNumber];
+        childArray = new ParentNode[occursNumber];
         for (int i = 0; i < occursNumber; i++) {
-            array[i] = Node.createParentNode(parent, levelNumber);
+            childArray[i] = NodeFactory.createParentNode(parent, levelNumber);
         }
-
     }
 
-    private ParentNode<T>[] array;
+    private ParentNode<T>[] childArray;
 
     /**
      * Will populate all the data in registered in the first occurs (0) in the following.
@@ -30,16 +33,16 @@ public class ParentArrayNode<T> extends ParentNode<T> {
      * @param nextStart the current cursor position when creating the substrings
      * @return the modified nextStart after all the occurs traitment
      */
-    public int populateOccurs(int nextStart) {
-        ParentNode model = getArray()[0];
-        for (int i = 1; i < getArray().length ; i++) {
+    public int duplicateOccurs(int nextStart) {
+        ParentNode model = this.childArray[0];
+        for (int i = 1; i < this.childArray.length ; i++) {
             for(Map.Entry<String,Node> entry : (Set<Map.Entry<String,Node>>)model.getChilds().entrySet()){
                 if(entry.getValue() instanceof ValueNode){
-                    nextStart = populateValueNode(nextStart, getArray()[i], entry);
+                    nextStart = populateValueNode(nextStart, this.childArray[i], entry);
                 }else if(entry.getValue() instanceof ParentArrayNode){
-                    nextStart = populateParentArrayNode(nextStart,getArray()[i],entry);
+                    nextStart = populateParentArrayNode(nextStart, this.childArray[i],entry);
                 }else if(entry.getValue() instanceof ParentNode){
-                   nextStart = populateParentNode(nextStart,getArray()[i],entry);
+                   nextStart = populateParentNode(nextStart, this.childArray[i],entry);
                 }
 
             }
@@ -50,11 +53,11 @@ public class ParentArrayNode<T> extends ParentNode<T> {
     private int populateParentArrayNode(int nextStart, ParentNode<T> toPopulate, Map.Entry<String, Node> entry) {
 
         ParentArrayNode parentArrayNode = (ParentArrayNode)entry.getValue();
-        ParentArrayNode parentArrayToPopulate = toPopulate.addParentArrayNode(entry.getKey(),parentArrayNode.levelNumber,parentArrayNode.array.length);
+        ParentArrayNode parentArrayToPopulate = toPopulate.addChildOfTypeParentArrayNode(entry.getKey(),parentArrayNode.levelNumber,parentArrayNode.childArray.length);
 
-        for(int i = 0; i < parentArrayNode.getArray().length; i++){
-            ParentNode source = parentArrayNode.getArray()[i];
-            ParentNode destination = parentArrayToPopulate.getArray()[i];
+        for(int i = 0; i < parentArrayNode.getChildArray().length; i++){
+            ParentNode source = parentArrayNode.getChildArray()[i];
+            ParentNode destination = parentArrayToPopulate.getChildArray()[i];
             nextStart = populateParentNodeChilds(nextStart, source, destination);
         }
 
@@ -63,7 +66,7 @@ public class ParentArrayNode<T> extends ParentNode<T> {
 
     private int populateParentNode(int nextStart, ParentNode<T> toPopulate, Map.Entry<String, Node> entry) {
         ParentNode parentNode = (ParentNode)entry.getValue();
-        ParentNode current = toPopulate.addParentNode(entry.getKey(),parentNode.levelNumber);
+        ParentNode current = toPopulate.addChildOfTypeParentNode(entry.getKey(),parentNode.levelNumber);
         nextStart = populateParentNodeChilds(nextStart, parentNode, current);
 
         return nextStart;
@@ -85,7 +88,7 @@ public class ParentArrayNode<T> extends ParentNode<T> {
 
     private int populateValueNode(int nextStart, ParentNode<T> tParentNode, Map.Entry<String, Node> entry) {
         Coordinates nextCoords = calculateCoordinates((ValueNode)entry.getValue(),nextStart);
-        tParentNode.addValueNode(entry.getKey(),nextCoords);
+        tParentNode.addChildOfTypeValueNode(entry.getKey(),nextCoords);
         nextStart += nextCoords.getSize();
         return nextStart;
     }
@@ -97,25 +100,29 @@ public class ParentArrayNode<T> extends ParentNode<T> {
 
 
     @Override
-    public ValueNode<T> addValueNode(String nodeName, Coordinates coords) {
-        return getArray()[0].addValueNode(nodeName, coords);
+    public ValueNode<T> addChildOfTypeValueNode(String nodeName, Coordinates coords) {
+        return this.childArray[0].addChildOfTypeValueNode(nodeName, coords);
     }
 
     @Override
-    public ParentNode<T> addParentNode(String nodeName, int lvlNumber) {
-        ParentNode newParent = getArray()[0].addParentNode(nodeName, lvlNumber);
+    public ValueNode<T> addChildOfTypeValueNode(String nodeName, Coordinates coords, ValueNode.ValueType type) {
+        return this.childArray[0].addChildOfTypeValueNode(nodeName, coords, type);
+    }
+
+    @Override
+    public ParentNode<T> addChildOfTypeParentNode(String nodeName, int lvlNumber) {
+        ParentNode newParent = this.childArray[0].addChildOfTypeParentNode(nodeName, lvlNumber);
         return newParent;
     }
 
     @Override
-    public ParentArrayNode<T> addParentArrayNode(String nodeName, int lvlNumber, int occursNumber) {
-        ParentArrayNode newParent = getArray()[0].addParentArrayNode(nodeName, lvlNumber,occursNumber);
+    public ParentArrayNode<T> addChildOfTypeParentArrayNode(String nodeName, int lvlNumber, int occursNumber) {
+        ParentArrayNode newParent = this.childArray[0].addChildOfTypeParentArrayNode(nodeName, lvlNumber,occursNumber);
         return newParent;
     }
 
-
-    public ParentNode<T>[] getArray() {
-        return array;
+    public ParentNode<T>[] getChildArray() {
+        return childArray;
     }
 
     @Override
@@ -124,13 +131,13 @@ public class ParentArrayNode<T> extends ParentNode<T> {
         if (!(o instanceof ParentArrayNode)) return false;
         if (!super.equals(o)) return false;
         ParentArrayNode<?> that = (ParentArrayNode<?>) o;
-        return Arrays.equals(getArray(), that.getArray());
+        return Arrays.equals(this.childArray, this.childArray);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + Arrays.hashCode(getArray());
+        result = 31 * result + Arrays.hashCode(this.childArray);
         return result;
     }
 }

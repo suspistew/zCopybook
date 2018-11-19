@@ -1,14 +1,30 @@
 package com.zthulj.zcopybook.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.zthulj.zcopybook.serializer.ValueNodeSerializer;
+
 import java.util.Objects;
 
+@JsonSerialize(using = ValueNodeSerializer.class)
 public final class ValueNode<T> extends Node<T> {
     private T value;
     private Coordinates coordinates;
+    private ValueType valueType;
+
+    public enum ValueType{
+        STRING, SIGNED_INT, SIGNED_FLOAT
+    }
 
     public ValueNode(ParentNode<T> parent,Coordinates coordinates) {
         super(parent);
         this.coordinates = coordinates;
+        this.valueType = ValueType.STRING;
+    }
+
+    public ValueNode(ParentNode<T> parent,Coordinates coordinates, ValueType valueType){
+        super(parent);
+        this.coordinates = coordinates;
+        this.valueType = valueType;
     }
 
     @Override
@@ -22,6 +38,10 @@ public final class ValueNode<T> extends Node<T> {
 
     public Coordinates getCoordinates() {
         return coordinates;
+    }
+
+    public ValueType getValueType() {
+        return valueType;
     }
 
     public void setValue(T value) {
