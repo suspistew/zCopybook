@@ -20,8 +20,8 @@ import lombok.ToString;
 public class ParentNode<T> extends Node<T> {
 
 	private static final long serialVersionUID = -7011113266458098086L;
-	private LinkedHashMap<String,Node<T>> childs;
-    protected int levelNumber;
+	private final LinkedHashMap<String,Node<T>> childs;
+    private final int levelNumber;
 
 
     public ParentNode(ParentNode<T> parent, LinkedHashMap<String,Node<T>> childs, int levelNumber) {

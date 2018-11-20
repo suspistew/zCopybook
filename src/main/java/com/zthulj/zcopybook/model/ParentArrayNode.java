@@ -20,7 +20,7 @@ public class ParentArrayNode<T> extends ParentNode<T> {
 
 	private static final long serialVersionUID = 943387055163029210L;
 
-	private ParentNode<T>[] childArray;
+	private final ParentNode<T>[] childArray;
 
     public ParentArrayNode(ParentNode<T> parent, int levelNumber, int occursNumber) {
         super(parent, null, levelNumber);
@@ -50,7 +50,7 @@ public class ParentArrayNode<T> extends ParentNode<T> {
 
     @Override
     public int copyInto(ParentNode<T> destination, int cursorPosition, String name) {
-        ParentArrayNode<T> newParentArray = NodeFactory.createParentNodeArray(destination,this.levelNumber,this.childArray.length);
+        ParentArrayNode<T> newParentArray = NodeFactory.createParentNodeArray(destination,this.getLevelNumber(),this.childArray.length);
         destination.addChild(newParentArray,name);
         for(int i = 0; i < getChildArray().length; i++){
             cursorPosition = copyChild(cursorPosition, getChildArray()[i], newParentArray.getChildArray()[i]);

@@ -14,16 +14,16 @@ import java.util.List;
 
 @JsonSerialize(using = ValueNodeSerializer.class)
 @Getter
+@Setter
 @EqualsAndHashCode(callSuper=true)
 @ToString
 public final class ValueNode<T> extends Node<T> {
 
 	private static final long serialVersionUID = -3833993476849963456L;
 
-	@Setter
 	private T value;
-    private Coordinates coordinates;
-    private ValueType valueType;
+    private final Coordinates coordinates;
+    private final ValueType valueType;
 
     public static enum ValueType{
         STRING, SIGNED_INT, SIGNED_FLOAT
