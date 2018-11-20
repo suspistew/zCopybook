@@ -25,7 +25,7 @@ public class ParentNode<T> extends Node<T> {
 
 
     public ParentNode(ParentNode<T> parent, LinkedHashMap<String,Node<T>> childs, int levelNumber) {
-		super(parent);
+		super(parent, true);
 		this.childs=childs;
 		this.levelNumber=levelNumber;
 	}
@@ -57,10 +57,5 @@ public class ParentNode<T> extends Node<T> {
         List<ValueNode<T>> allValueNodes = new ArrayList<>();
         childs.forEach((k,v)->allValueNodes.addAll(v.getAllValueNodes()));
         return allValueNodes;
-    }
-
-    @Override
-    public boolean isParent() {
-        return true;
     }
  }

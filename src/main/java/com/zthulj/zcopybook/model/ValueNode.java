@@ -30,7 +30,7 @@ public final class ValueNode<T> extends Node<T> {
     }
 
     public ValueNode(ParentNode<T> parent,Coordinates coordinates, ValueType valueType){
-        super(parent);
+        super(parent, false);
         this.coordinates = coordinates;
         this.valueType = valueType;
     }
@@ -45,12 +45,7 @@ public final class ValueNode<T> extends Node<T> {
     }
 
     private Coordinates calculateCoordinates(ValueNode<T> value, int nextStart) {
-        return Coordinates.from(nextStart, nextStart + value.getCoordinates().getSize() - 1);
-    }
-
-    @Override
-    public boolean isParent() {
-        return false;
+        return Coordinates.create(nextStart, nextStart + value.getCoordinates().getSize() - 1);
     }
 
     @Override

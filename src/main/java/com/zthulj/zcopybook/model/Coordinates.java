@@ -18,7 +18,7 @@ public final class Coordinates implements Serializable {
 	private final int start;
     private final int end;
 
-    public static Coordinates from(int start, int end) {
+    public static Coordinates create(int start, int end) {
         if(end < start)
             throw new IllegalArgumentException("end can't be less than start. It should be at least equal");
         return new Coordinates(start, end);

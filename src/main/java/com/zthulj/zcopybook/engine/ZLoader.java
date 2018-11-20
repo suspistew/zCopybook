@@ -169,7 +169,7 @@ public final class ZLoader {
         while (cursor.lastParent != null && levelNb <= cursor.lastParent.getLevelNumber()) {
             if (cursor.lastParent instanceof ParentArrayNode)
                 cursor.cursorPosition = ((ParentArrayNode) cursor.lastParent).duplicateOccurs(cursor.cursorPosition);
-            cursor.lastParent = cursor.lastParent.getParent();
+            cursor.lastParent = cursor.lastParent.getParentNode();
         }
     }
 
@@ -228,7 +228,7 @@ public final class ZLoader {
             fieldSize = dataType.length();
         }
 
-        Node node = NodeFactory.createValueNode(lastParent, Coordinates.from(nextStart, nextStart + fieldSize - 1), type);
+        Node node = NodeFactory.createValueNode(lastParent, Coordinates.create(nextStart, nextStart + fieldSize - 1), type);
         lastParent.addChild(node, valueMatcher.group(3));
 
         nextStart += fieldSize;
