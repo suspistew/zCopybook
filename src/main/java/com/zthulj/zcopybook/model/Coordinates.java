@@ -1,16 +1,22 @@
 package com.zthulj.zcopybook.model;
 
 import java.io.Serializable;
-import java.util.Objects;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
+@Getter
+@EqualsAndHashCode
+@AllArgsConstructor(access=AccessLevel.PRIVATE)
+@ToString
 public final class Coordinates implements Serializable {
-    private final int start;
+    
+	private static final long serialVersionUID = 6100935963637812753L;
+	private final int start;
     private final int end;
-
-    private Coordinates(int start, int end) {
-        this.start = start;
-        this.end = end;
-    }
 
     public static Coordinates from(int start, int end) {
         if(end < start)
@@ -21,23 +27,4 @@ public final class Coordinates implements Serializable {
     public int getSize(){
         return end - start + 1;
     }
-
-    public int getStart() {
-        return start;
-    }
-
-
-    public int getEnd() {
-        return end;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Coordinates)) return false;
-        Coordinates that = (Coordinates) o;
-        return getStart() == that.getStart() &&
-                getEnd() == that.getEnd();
-    }
-
 }

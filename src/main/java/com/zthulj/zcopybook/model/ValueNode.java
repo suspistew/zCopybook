@@ -4,15 +4,25 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zthulj.zcopybook.factory.NodeFactory;
 import com.zthulj.zcopybook.serializer.ValueNodeSerializer;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @JsonSerialize(using = ValueNodeSerializer.class)
+@Getter
+@EqualsAndHashCode(callSuper=true)
+@ToString
 public final class ValueNode<T> extends Node<T> {
-    private T value;
+    
+	private static final long serialVersionUID = -3833993476849963456L;
+	
+	@Setter
+	private T value;
     private Coordinates coordinates;
     private ValueType valueType;
 
-    public enum ValueType{
+    public static enum ValueType{
         STRING, SIGNED_INT, SIGNED_FLOAT
     }
 
@@ -23,15 +33,15 @@ public final class ValueNode<T> extends Node<T> {
     }
 
     @Override
-    public int copyInto(ParentNode destination, int cursorPosition, String name) {
+    public int copyInto(ParentNode<T> destination, int cursorPosition, String name) {
         Coordinates nextCoords = calculateCoordinates(this, cursorPosition);
-        ValueNode valueNode = NodeFactory.createValueNode(destination,nextCoords,this.valueType);
+        ValueNode<T> valueNode = NodeFactory.createValueNode(destination,nextCoords,this.valueType);
         destination.addChild(valueNode,name);
         cursorPosition += nextCoords.getSize();
         return cursorPosition;
     }
 
-    private Coordinates calculateCoordinates(ValueNode value, int nextStart) {
+    private Coordinates calculateCoordinates(ValueNode<T> value, int nextStart) {
         return Coordinates.from(nextStart, nextStart + value.getCoordinates().getSize() - 1);
     }
 
@@ -39,30 +49,4 @@ public final class ValueNode<T> extends Node<T> {
     public boolean isParent() {
         return false;
     }
-
-    public T getValue() {
-        return value;
-    }
-
-    public Coordinates getCoordinates() {
-        return coordinates;
-    }
-
-    public ValueType getValueType() {
-        return valueType;
-    }
-
-    public void setValue(T value) {
-        this.value = value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ValueNode)) return false;
-        ValueNode<?> valueNode = (ValueNode<?>) o;
-        return Objects.equals(getValue(), valueNode.getValue()) &&
-                Objects.equals(getCoordinates(), valueNode.getCoordinates());
-    }
-
 }

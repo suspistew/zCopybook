@@ -1,31 +1,40 @@
 package com.zthulj.zcopybook.model;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zthulj.zcopybook.factory.NodeFactory;
 import com.zthulj.zcopybook.serializer.ParentNodeSerializer;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
+@EqualsAndHashCode(callSuper=true)
+@Getter
 @JsonSerialize(using = ParentNodeSerializer.class)
+@ToString
 public class ParentNode<T> extends Node<T> {
-    private LinkedHashMap<String,Node<T>> childs;
+	
+	private static final long serialVersionUID = -7011113266458098086L;
+	private LinkedHashMap<String,Node<T>> childs;
     protected int levelNumber;
 
-    public ParentNode(ParentNode<T> parent, LinkedHashMap<String, Node<T>> childs, int levelNumber) {
-        super(parent);
-        this.childs = childs;
-        this.levelNumber = levelNumber;
-    }
 
-    public void addChild(Node child, String name) {
+    public ParentNode(ParentNode<T> parent, LinkedHashMap<String,Node<T>> childs, int levelNumber) {
+		super(parent);
+		this.childs=childs;
+		this.levelNumber=levelNumber;
+	}
+
+	public void addChild(Node<T> child, String name) {
         this.getChilds().put(getFinalName(name),child);
     }
 
     @Override
-    public int copyInto(ParentNode destination, int cursorPosition, String name) {
-        ParentNode current = NodeFactory.createParentNode(destination,this.levelNumber);
+    public int copyInto(ParentNode<T> destination, int cursorPosition, String name) {
+        ParentNode<T> current = NodeFactory.createParentNode(destination,this.levelNumber);
         destination.addChild(current,name);
         for (Map.Entry<String, Node<T>> childEntry : getChilds().entrySet()) {
             cursorPosition = childEntry.getValue().copyInto(current,cursorPosition,childEntry.getKey());
@@ -41,27 +50,8 @@ public class ParentNode<T> extends Node<T> {
         return name;
     }
 
-    public LinkedHashMap<String, Node<T>> getChilds() {
-        return childs;
-    }
-
-    public int getLevelNumber() {
-        return levelNumber;
-    }
-
-
     @Override
     public boolean isParent() {
         return true;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ParentNode)) return false;
-        ParentNode<?> that = (ParentNode<?>) o;
-        return getLevelNumber() == that.getLevelNumber() &&
-                Objects.equals(getChilds(), that.getChilds());
-    }
-
  }
