@@ -10,15 +10,13 @@ import lombok.ToString;
 
 @AllArgsConstructor(access=AccessLevel.PROTECTED)
 @Getter
-@ToString(exclude="parent")
-@EqualsAndHashCode(exclude="parent")
+@ToString(exclude="parentNode")
+@EqualsAndHashCode(exclude="parentNode")
 public abstract class Node<T> implements Serializable {
     
 	private static final long serialVersionUID = -3514066933920187128L;
-	private ParentNode<T> parent;
-
-	
-    public abstract boolean isParent();
+	private final ParentNode<T> parentNode;
+	private final boolean parent;
 
     public abstract int copyInto(ParentNode<T> destination, int cursorPosition, String name);
 }

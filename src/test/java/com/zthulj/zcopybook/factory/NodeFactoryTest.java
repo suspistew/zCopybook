@@ -21,7 +21,7 @@ public class NodeFactoryTest {
     public void createRootNode_shouldReturnRootParentNode(){
         ParentNode<Object> node = NodeFactory.createRootNode();
         Assert.assertEquals(new HashMap<>(),node.getChilds());
-        Assert.assertNull(node.getParent());
+        Assert.assertNull(node.getParentNode());
     }
 
     @Test
@@ -30,7 +30,7 @@ public class NodeFactoryTest {
         ParentNode<Object> node = NodeFactory.createParentNode(root, 1);
 
         Assert.assertEquals(new HashMap<>(),node.getChilds());
-        Assert.assertEquals(root,node.getParent());
+        Assert.assertEquals(root,node.getParentNode());
         Assert.assertEquals(1, node.getLevelNumber());
     }
 
@@ -38,10 +38,10 @@ public class NodeFactoryTest {
     public void createChildNode_shouldReturnChildNode(){
         ParentNode<Object> parent = NodeFactory.createRootNode();
         Object t = new String("test");
-        ValueNode<Object> child = NodeFactory.createValueNode(parent, Coordinates.from(0,1));
+        ValueNode<Object> child = NodeFactory.createValueNode(parent, Coordinates.create(0,1));
         child.setValue(t);
 
-        Assert.assertEquals(parent, child.getParent());
+        Assert.assertEquals(parent, child.getParentNode());
         Assert.assertEquals(t,child.getValue());
 
     }

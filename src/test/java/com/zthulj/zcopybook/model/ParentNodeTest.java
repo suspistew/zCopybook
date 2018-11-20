@@ -16,7 +16,7 @@ public class ParentNodeTest {
     @Test
     public void addValueNode_shouldAddAValueNodeToChilds(){
         ParentNode<Object> root = NodeFactory.createRootNode();
-        root.addChild(NodeFactory.createValueNode(root,  Coordinates.from(0,1)),"child");
+        root.addChild(NodeFactory.createValueNode(root,  Coordinates.create(0,1)),"child");
         Assert.assertEquals(false,root.getChilds().get("child").isParent());
     }
 

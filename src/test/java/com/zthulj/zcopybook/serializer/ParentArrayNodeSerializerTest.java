@@ -14,7 +14,7 @@ public class ParentArrayNodeSerializerTest {
     @Test
     public void serialize_parentArrayWithChilds_shouldReturnJsonArray() throws JsonProcessingException {
         ParentArrayNode parent = NodeFactory.createParentNodeArray(null,1,3);
-        parent.addChild(NodeFactory.createValueNode(parent,Coordinates.from(0,2)),"Hello");
+        parent.addChild(NodeFactory.createValueNode(parent,Coordinates.create(0,2)),"Hello");
         parent.duplicateOccurs(3);
         for (ParentNode parenNode : parent.getChildArray()) {
             ValueNode value = (ValueNode) parenNode.getChilds().get("Hello");
@@ -33,7 +33,7 @@ public class ParentArrayNodeSerializerTest {
         ParentArrayNode parent = NodeFactory.createParentNodeArray(root,1,3);
         root.addChild(parent,"arraynode");
 
-        parent.addChild(NodeFactory.createValueNode(parent,Coordinates.from(0,2)),"Hello");
+        parent.addChild(NodeFactory.createValueNode(parent,Coordinates.create(0,2)),"Hello");
 
         parent.duplicateOccurs(3);
         for (ParentNode parenNode : parent.getChildArray()) {

@@ -23,7 +23,7 @@ public class ParentNode<T> extends Node<T> {
 
 
     public ParentNode(ParentNode<T> parent, LinkedHashMap<String,Node<T>> childs, int levelNumber) {
-		super(parent);
+		super(parent, true);
 		this.childs=childs;
 		this.levelNumber=levelNumber;
 	}
@@ -48,10 +48,5 @@ public class ParentNode<T> extends Node<T> {
         while(this.getChilds().containsKey(name))
             name = nodeName + (++i);
         return name;
-    }
-
-    @Override
-    public boolean isParent() {
-        return true;
     }
  }
