@@ -40,8 +40,4 @@ public final class Coordinates implements Serializable {
                 getEnd() == that.getEnd();
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getStart(), getEnd());
-    }
 }

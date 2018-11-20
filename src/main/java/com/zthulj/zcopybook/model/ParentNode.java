@@ -7,7 +7,6 @@ import com.zthulj.zcopybook.serializer.ParentNodeSerializer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 @JsonSerialize(using = ParentNodeSerializer.class)
 public class ParentNode<T> extends Node<T> {
@@ -65,8 +64,4 @@ public class ParentNode<T> extends Node<T> {
                 Objects.equals(getChilds(), that.getChilds());
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getChilds(), getLevelNumber());
-    }
-}
+ }

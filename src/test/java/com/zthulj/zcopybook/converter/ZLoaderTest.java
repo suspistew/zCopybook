@@ -8,37 +8,37 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-public class ZConverterTest {
+public class ZLoaderTest {
 
-    ZConverter converter = new ZConverter();
+    ZLoader converter = new ZLoader();
 
     @Test(expected = IllegalArgumentException.class)
     public void convert_nullString_shouldThrowIllegalArgExc() {
         String s = null;
-        converter.convert(s);
+        converter.load(s);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void convert_nullFile_shouldThrowIllegalArgExc() throws IOException {
         File f = null;
-        converter.convert(f);
+        converter.load(f);
     }
 
     @Test
     public void convert_emptyString_shouldReturnEmptyModel() {
-        Node node = converter.convert("");
+        Node node = converter.load("");
         Assert.assertEquals(NodeFactory.createRootNode(), node);
     }
 
     @Test
     public void convert_emptyFile_shouldReturnEmptyModel() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/empty.cbl"));
+        Node node = converter.load(fileFromResource("copybook/empty.cbl"));
         Assert.assertEquals(NodeFactory.createRootNode(), node);
     }
 
     @Test
     public void convert_aSingleParent_shouldReturnASingleParentModel() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/singleParent.cbl"));
+        Node node = converter.load(fileFromResource("copybook/singleParent.cbl"));
 
         ParentNode expected = NodeFactory.createRootNode();
         expected.addChild(NodeFactory.createParentNode(expected, 1), "CLIENT");
@@ -48,7 +48,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_aSingleParentWithComments_shouldReturnASingleParentModel() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/singleParentWithComments.cbl"));
+        Node node = converter.load(fileFromResource("copybook/singleParentWithComments.cbl"));
 
         ParentNode expected = NodeFactory.createRootNode();
         expected.addChild(NodeFactory.createParentNode(expected, 1), "CLIENT");
@@ -59,7 +59,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_SingleParentOneChildValue_shouldReturnASingleParentModelWithAChild() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/singleParentOneChildValue.cbl"));
+        Node node = converter.load(fileFromResource("copybook/singleParentOneChildValue.cbl"));
 
         ParentNode expected = NodeFactory.createRootNode();
         ParentNode parent = NodeFactory.createParentNode(expected, 1);
@@ -71,7 +71,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_ManyParentManyChilds_shouldReturnAManyParentWithManyChildModel() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/manyParentManyChilds.cbl"));
+        Node node = converter.load(fileFromResource("copybook/manyParentManyChilds.cbl"));
 
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
@@ -96,7 +96,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_ParentChildsWith88Level_ShouldIgnore88Level() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/parentManyChildWith88Level.cbl"));
+        Node node = converter.load(fileFromResource("copybook/parentManyChildWith88Level.cbl"));
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
 
@@ -115,7 +115,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_ParentWithOccurs_shouldReturnModelWithOccurs() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/oneParentWithOccurs.cbl"));
+        Node node = converter.load(fileFromResource("copybook/oneParentWithOccurs.cbl"));
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
 
@@ -131,7 +131,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_NodeWithAParentAndSomeValues_shouldReturnModelOK() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/aParentAndSomeChildsAtSameLevel.cbl"));
+        Node node = converter.load(fileFromResource("copybook/aParentAndSomeChildsAtSameLevel.cbl"));
 
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
@@ -152,7 +152,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_NodeWithAParentArrayAndSomeValuesAtSameLevel_shouldReturnModelOK() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/aParentOccursAndSomeChildsAtSameLevel.cbl"));
+        Node node = converter.load(fileFromResource("copybook/aParentOccursAndSomeChildsAtSameLevel.cbl"));
 
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
@@ -174,7 +174,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_NodeWithRedefineField_ShouldIgnoreRedefine() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/aNodeWithARedefine.cbl"));
+        Node node = converter.load(fileFromResource("copybook/aNodeWithARedefine.cbl"));
 
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
@@ -194,7 +194,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_NodeWithRedefineStruct_ShouldIgnoreRedefine() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/aNodeWithARedefineStruct.cbl"));
+        Node node = converter.load(fileFromResource("copybook/aNodeWithARedefineStruct.cbl"));
 
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
@@ -213,7 +213,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_NodeWithSignedValue_ShouldDetectSigned() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/simplecopybook.cbl"));
+        Node node = converter.load(fileFromResource("copybook/simplecopybook.cbl"));
 
         ParentNode parent = (ParentNode) ((ParentNode) node).getChilds().get("CLIENT");
         ValueNode value = (ValueNode) parent.getChilds().get("SIGNEDINT");
@@ -224,7 +224,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_NodeWithSignedFloatValue_ShouldDetectSigned() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/simplecopybook.cbl"));
+        Node node = converter.load(fileFromResource("copybook/simplecopybook.cbl"));
 
         ParentNode parent = (ParentNode) ((ParentNode) node).getChilds().get("CLIENT");
         ValueNode value = (ValueNode) parent.getChilds().get("SIGNEDFLOAT");
@@ -235,7 +235,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_NodeWithPicX_ShouldDetectDefault() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/simplecopybook.cbl"));
+        Node node = converter.load(fileFromResource("copybook/simplecopybook.cbl"));
 
         ParentNode parent = (ParentNode) ((ParentNode) node).getChilds().get("CLIENT");
         ValueNode value = (ValueNode) parent.getChilds().get("PIC-X");
@@ -245,7 +245,7 @@ public class ZConverterTest {
 
     @Test
     public void convert_duplicateKey_ShouldRenameKeys() throws IOException {
-        Node node = converter.convert(fileFromResource("copybook/simplecopybook.cbl"));
+        Node node = converter.load(fileFromResource("copybook/simplecopybook.cbl"));
 
         ParentNode parent = (ParentNode) ((ParentNode) node).getChilds().get("CLIENT");
         ValueNode value = (ValueNode) parent.getChilds().get("DUPLICATE2");

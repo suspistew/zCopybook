@@ -18,7 +18,6 @@ public class ParentArrayNode<T> extends ParentNode<T> {
         super(parent, null, levelNumber);
         if (occursNumber < 1)
             throw new IllegalArgumentException("OccursNumber can't be less than 1");
-
         childArray = new ParentNode[occursNumber];
         for (int i = 0; i < occursNumber; i++) {
             childArray[i] = NodeFactory.createParentNode(parent, levelNumber);
@@ -47,14 +46,13 @@ public class ParentArrayNode<T> extends ParentNode<T> {
     public int copyInto(ParentNode destination, int cursorPosition, String name) {
         ParentArrayNode newParentArray = NodeFactory.createParentNodeArray(destination,this.levelNumber,this.childArray.length);
         destination.addChild(newParentArray,name);
-
         for(int i = 0; i < getChildArray().length; i++){
             cursorPosition = copyChild(cursorPosition, getChildArray()[i], newParentArray.getChildArray()[i]);
         }
         return cursorPosition;
     }
 
-    private int copyChild(int cursorPosition, ParentNode<T> source, ParentNode destination) {
+    private int copyChild(int cursorPosition, ParentNode<T> source, ParentNode<T> destination) {
         for (Map.Entry<String, Node<T>> childEntry : source.getChilds().entrySet()) {
             cursorPosition = childEntry.getValue().copyInto(destination,cursorPosition,childEntry.getKey());
         }
@@ -77,12 +75,5 @@ public class ParentArrayNode<T> extends ParentNode<T> {
         if (!super.equals(o)) return false;
         ParentArrayNode<?> that = (ParentArrayNode<?>) o;
         return Arrays.equals(this.childArray, this.childArray);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + Arrays.hashCode(this.childArray);
-        return result;
     }
 }

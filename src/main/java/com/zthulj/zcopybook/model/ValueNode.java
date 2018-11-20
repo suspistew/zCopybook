@@ -16,12 +16,6 @@ public final class ValueNode<T> extends Node<T> {
         STRING, SIGNED_INT, SIGNED_FLOAT
     }
 
-    public ValueNode(ParentNode<T> parent,Coordinates coordinates) {
-        super(parent);
-        this.coordinates = coordinates;
-        this.valueType = ValueType.STRING;
-    }
-
     public ValueNode(ParentNode<T> parent,Coordinates coordinates, ValueType valueType){
         super(parent);
         this.coordinates = coordinates;
@@ -71,8 +65,4 @@ public final class ValueNode<T> extends Node<T> {
                 Objects.equals(getCoordinates(), valueNode.getCoordinates());
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getValue(), getCoordinates());
-    }
 }

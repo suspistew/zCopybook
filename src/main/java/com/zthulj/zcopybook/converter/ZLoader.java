@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class ZConverter {
+public final class ZLoader {
 
-    private static Logger logger = LoggerFactory.getLogger(ZConverter.class);
+    private static Logger logger = LoggerFactory.getLogger(ZLoader.class);
 
     private final Pattern parentPattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)");
     private final Pattern levelNbPattern = Pattern.compile("([^ ]*?)( {1})(.*?)");
@@ -48,24 +48,24 @@ public final class ZConverter {
      * @return the root node containing the converted copybook
      * @throws IOException When copybook can't be read
      */
-    public RootNode convert(@NotNull File copybook) throws IOException {
+    public RootNode load(@NotNull final File copybook) throws IOException {
         if (null == copybook)
             throw new IllegalArgumentException("copybook can't be null !");
 
-        return convert(copybook, null);
+        return load(copybook, StandardCharsets.UTF_8);
     }
 
     /**
      * @param copybook a file containing the copybook format
-     * @param charset  to use to read the copybook file. Default is StandardCharsets.UTF_8
+     * @param charset  to use to read the copybook file.
      * @return the root node containing the converted copybook
      * @throws IOException When copybook can't be read
      */
-    public RootNode convert(@NotNull File copybook, Charset charset) throws IOException {
-        if (null == copybook)
-            throw new IllegalArgumentException("copybook can't be null !");
+    public RootNode load(@NotNull final File copybook, @NotNull final Charset charset) throws IOException {
+        if (null == copybook || null == charset)
+            throw new IllegalArgumentException("copybook and charset can't be null !");
 
-        return convert(FileUtils.readFileToString(copybook, charset != null ? charset : StandardCharsets.UTF_8));
+        return load(FileUtils.readFileToString(copybook, charset));
     }
 
 
@@ -73,7 +73,7 @@ public final class ZConverter {
      * @param copybook a String containing the copybook format
      * @return the root node containing the converted copybook
      */
-    public RootNode convert(@NotNull String copybook) {
+    public RootNode load(@NotNull final String copybook) {
         if (null == copybook)
             throw new IllegalArgumentException("copybook can't be null !");
 
@@ -128,7 +128,7 @@ public final class ZConverter {
         return node;
     }
 
-    private List<String> cleanCopybook(String copybook) {
+    private List<String> cleanCopybook(final String copybook) {
         String cleanedLinedCopybook = cleanLines(copybook);
         List<String> cleanedCopybook = new ArrayList<>();
         for (String field:cleanedLinedCopybook.split("\\.")) {
@@ -137,7 +137,7 @@ public final class ZConverter {
         return cleanedCopybook;
     }
 
-    private String cleanLines(String copybook) {
+    private String cleanLines(final String copybook) {
         String result = "";
         for (String line : copybook.split("\\n")) {
             if (lineShouldBeIgnored(line))
@@ -148,7 +148,7 @@ public final class ZConverter {
         return result.replaceAll(" +", " ");
     }
 
-    private boolean lineShouldBeIgnored(String line) {
+    private boolean lineShouldBeIgnored(final String line) {
         boolean shouldBeIgnored =
                 line.trim().startsWith("*") || line.trim().startsWith("88");
 
@@ -158,14 +158,14 @@ public final class ZConverter {
         return shouldBeIgnored;
     }
 
-    private int getLevelNbFromLine(String line) {
+    private int getLevelNbFromLine(final String line) {
         Matcher matcher = levelNbPattern.matcher(line);
         if (!matcher.matches())
             return 0;
         return Integer.parseInt(matcher.group(1));
     }
 
-    private void updateCursorWithCurrentLevelNb(Cursor cursor, int levelNb) {
+    private void updateCursorWithCurrentLevelNb(Cursor cursor, final int levelNb) {
         while (cursor.lastParent != null && levelNb <= cursor.lastParent.getLevelNumber()) {
             if (cursor.lastParent instanceof ParentArrayNode)
                 cursor.cursorPosition = ((ParentArrayNode) cursor.lastParent).duplicateOccurs(cursor.cursorPosition);
@@ -173,7 +173,7 @@ public final class ZConverter {
         }
     }
 
-    private boolean handleSimpleParent(String line, Cursor cursor, int levelNb) {
+    private boolean handleSimpleParent(final String line, Cursor cursor, final int levelNb) {
         Matcher nodeMatcher = parentPattern.matcher(line);
         if (nodeMatcher.matches()) {
             ParentNode newParent = NodeFactory.createParentNode(cursor.lastParent, levelNb);
@@ -184,7 +184,7 @@ public final class ZConverter {
         return false;
     }
 
-    private boolean handleOccursParent(String line, Cursor cursor, int levelNb) {
+    private boolean handleOccursParent(final String line, Cursor cursor, final int levelNb) {
         Matcher occursMatcher = parentArrayPattern.matcher(line);
         if (occursMatcher.matches()) {
             int occursNb = Integer.parseInt(occursMatcher.group(7));
@@ -196,7 +196,7 @@ public final class ZConverter {
         return false;
     }
 
-    private void handleValue(String line, Cursor cursor) {
+    private void handleValue(final String line, Cursor cursor) {
         Matcher valueMatcher = simpleValuePattern.matcher(line);
 
         if (valueMatcher.matches()) {
