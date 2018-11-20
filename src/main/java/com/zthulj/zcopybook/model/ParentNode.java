@@ -5,7 +5,9 @@ import com.zthulj.zcopybook.factory.NodeFactory;
 import com.zthulj.zcopybook.serializer.ParentNodeSerializer;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 @JsonSerialize(using = ParentNodeSerializer.class)
 public class ParentNode<T> extends Node<T> {
@@ -22,31 +24,14 @@ public class ParentNode<T> extends Node<T> {
         this.getChilds().put(getFinalName(name),child);
     }
 
-    public ParentNode<T> addChildOfTypeParentNode(String nodeName, int lvlNumber) {
-        String name = getFinalName(nodeName);
-        ParentNode newParent = NodeFactory.createParentNode(this, lvlNumber);
-        this.getChilds().put(name,newParent);
-        return newParent;
-    }
-
-
-
-    public ValueNode<T> addChildOfTypeValueNode(String nodeName, Coordinates coords) {
-        return addChildOfTypeValueNode(nodeName, coords, ValueNode.ValueType.STRING);
-    }
-
-    public ValueNode<T> addChildOfTypeValueNode(String nodeName, Coordinates coords, ValueNode.ValueType type) {
-        String name = getFinalName(nodeName);
-        ValueNode newChild = NodeFactory.createValueNode(this, coords, type);
-        this.getChilds().put(name, newChild);
-        return newChild;
-    }
-
-    public ParentArrayNode<T> addChildOfTypeParentArrayNode(String nodeName, int lvlNumber, int occursNumber) {
-        String name = getFinalName(nodeName);
-        ParentArrayNode newParent = NodeFactory.createParentNodeArray(this, lvlNumber, occursNumber);
-        this.getChilds().put(name, newParent);
-        return newParent;
+    @Override
+    public int copyInto(ParentNode destination, int cursorPosition, String name) {
+        ParentNode current = NodeFactory.createParentNode(destination,this.levelNumber);
+        destination.addChild(current,name);
+        for (Map.Entry<String, Node<T>> childEntry : getChilds().entrySet()) {
+            cursorPosition = childEntry.getValue().copyInto(current,cursorPosition,childEntry.getKey());
+        }
+        return cursorPosition;
     }
 
     private String getFinalName(String nodeName) {

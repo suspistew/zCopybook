@@ -32,9 +32,9 @@ public class ParentArrayNodeTest {
         ParentNode root = NodeFactory.createRootNode();
         ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
 
-        ValueNode child = parent.addChildOfTypeValueNode("TEST", Coordinates.from(0, 1));
-        Assert.assertNotNull(child);
-        Assert.assertEquals(child, parent.getChildArray()[0].getChilds().get("TEST"));
+        parent.addChild(NodeFactory.createValueNode(parent, Coordinates.from(0, 1)),"TEST");
+
+        Assert.assertEquals(1, parent.getChildArray()[0].getChilds().size());
         Assert.assertEquals(0, parent.getChildArray()[1].getChilds().size());
         Assert.assertEquals(0, parent.getChildArray()[2].getChilds().size());
 
@@ -45,7 +45,8 @@ public class ParentArrayNodeTest {
         ParentNode root = NodeFactory.createRootNode();
         ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
 
-        ParentNode parent1 = parent.addChildOfTypeParentNode("PARENT", 1);
+        ParentNode parent1 = NodeFactory.createParentNode(parent,1);
+        parent.addChild(parent1,"PARENT");
 
         Assert.assertNotNull(parent1);
         Assert.assertEquals(parent1, parent.getChildArray()[0].getChilds().get("PARENT"));
@@ -60,7 +61,8 @@ public class ParentArrayNodeTest {
         ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
 
 
-        ParentArrayNode parent1 = parent.addChildOfTypeParentArrayNode("PARENTARRAY", 1, 2);
+        ParentArrayNode parent1 = NodeFactory.createParentNodeArray(parent,1,2);
+        parent.addChild(parent1,"PARENTARRAY");
 
         Assert.assertNotNull(parent1);
         Assert.assertEquals(parent1, parent.getChildArray()[0].getChilds().get("PARENTARRAY"));
@@ -74,11 +76,10 @@ public class ParentArrayNodeTest {
     public void populateOccurs_occurs3OneChild_shouldPopulateOccursWithOKCoords() {
         ParentNode root = NodeFactory.createRootNode();
         ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
-        ValueNode child = parent.addChildOfTypeValueNode("TEST", Coordinates.from(0, 1));
+        parent.addChild(NodeFactory.createValueNode(parent,Coordinates.from(0, 1)),"TEST");
 
         parent.duplicateOccurs(2);
 
-        Assert.assertEquals(child, parent.getChildArray()[0].getChilds().get("TEST"));
         ValueNode child2 = (ValueNode) parent.getChildArray()[1].getChilds().get("TEST");
         ValueNode child3 = (ValueNode) parent.getChildArray()[2].getChilds().get("TEST");
 
@@ -93,9 +94,10 @@ public class ParentArrayNodeTest {
         ParentNode root = NodeFactory.createRootNode();
         ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
 
-        ParentNode parent1 = parent.addChildOfTypeParentNode("PARENT1", 1);
-        parent1.addChildOfTypeValueNode("VALUE1", Coordinates.from(0, 2));
-        parent1.addChildOfTypeValueNode("VALUE2", Coordinates.from(3, 5));
+        ParentNode parent1 = NodeFactory.createParentNode(parent,1);
+                parent.addChild(parent1,"PARENT1");
+        parent1.addChild(NodeFactory.createValueNode(parent1,Coordinates.from(0, 2)),"VALUE1");
+        parent1.addChild(NodeFactory.createValueNode(parent1,Coordinates.from(3, 5)),"VALUE2");
 
         parent.duplicateOccurs(6);
 
@@ -118,22 +120,28 @@ public class ParentArrayNodeTest {
         ParentNode root = NodeFactory.createRootNode();
         ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
 
-        ParentNode<Object> parent_1 = parent.addChildOfTypeParentNode("PARENT1", 0);
-        ParentNode<Object> parent_2 = parent.addChildOfTypeParentNode("PARENT2", 0);
+        ParentNode<Object> parent_1 = NodeFactory.createParentNode(parent,0);
+                parent.addChild(parent_1,"PARENT1");
+        ParentNode<Object> parent_2 = NodeFactory.createParentNode(parent,0);
+                parent.addChild(parent_2,"PARENT2");
 
-        ParentNode<Object> parent_1_1 = parent_1.addChildOfTypeParentNode("PARENT1_1", 0);
-        ParentNode<Object> parent_1_2 = parent_1.addChildOfTypeParentNode("PARENT1_2", 0);
-        ParentNode<Object> parent_2_1 = parent_2.addChildOfTypeParentNode("PARENT2_1", 0);
-        ParentNode<Object> parent_2_2 = parent_2.addChildOfTypeParentNode("PARENT2_2", 0);
+        ParentNode<Object> parent_1_1 = NodeFactory.createParentNode(parent_1,0);
+                parent_1.addChild(parent_1_1,"PARENT1_1");
+        ParentNode<Object> parent_1_2 = NodeFactory.createParentNode(parent_1,0);
+                parent_1.addChild(parent_1_2,"PARENT1_2");
+        ParentNode<Object> parent_2_1 = NodeFactory.createParentNode(parent_2,0);
+                parent_2.addChild(parent_2_1,"PARENT2_1");
+        ParentNode<Object> parent_2_2 = NodeFactory.createParentNode(parent_2,0);
+                parent_2.addChild(parent_2_2,"PARENT2_2");
 
-        parent_1_1.addChildOfTypeValueNode("VALUE1", Coordinates.from(0, 2));
-        parent_1_1.addChildOfTypeValueNode("VALUE2", Coordinates.from(3, 5));
-        parent_1_2.addChildOfTypeValueNode("VALUE3", Coordinates.from(6, 8));
-        parent_1_2.addChildOfTypeValueNode("VALUE4", Coordinates.from(9, 11));
-        parent_2_1.addChildOfTypeValueNode("VALUE5", Coordinates.from(12, 14));
-        parent_2_1.addChildOfTypeValueNode("VALUE6", Coordinates.from(15, 18));
-        parent_2_2.addChildOfTypeValueNode("VALUE7", Coordinates.from(19, 29));
-        parent_2_2.addChildOfTypeValueNode("VALUE8", Coordinates.from(30, 42));
+        parent_1_1.addChild(NodeFactory.createValueNode(parent_1_1, Coordinates.from(0, 2)),"VALUE1");
+        parent_1_1.addChild(NodeFactory.createValueNode(parent_1_1, Coordinates.from(3, 5)),"VALUE2");
+        parent_1_2.addChild(NodeFactory.createValueNode(parent_1_2, Coordinates.from(6, 8)),"VALUE3");
+        parent_1_2.addChild(NodeFactory.createValueNode(parent_1_2, Coordinates.from(9, 11)),"VALUE4");
+        parent_2_1.addChild(NodeFactory.createValueNode(parent_2_1, Coordinates.from(12, 14)),"VALUE5");
+        parent_2_1.addChild(NodeFactory.createValueNode(parent_2_1, Coordinates.from(15, 18)),"VALUE6");
+        parent_2_2.addChild(NodeFactory.createValueNode(parent_2_2, Coordinates.from(19, 29)),"VALUE7");
+        parent_2_2.addChild(NodeFactory.createValueNode(parent_2_2, Coordinates.from(30, 42)),"VALUE8");
 
         parent.duplicateOccurs(43);
 
@@ -179,11 +187,14 @@ public class ParentArrayNodeTest {
     @Test
     public void populateOccurs_3occurs_ParentChildWithArrayParentChildWithAChildAnd2occurs_shouldPopulateOccursWithOKCoords() {
         ParentNode root = NodeFactory.createRootNode();
-        ParentArrayNode<Object> parent = root.addChildOfTypeParentArrayNode("ARRAY", 0, 3);
-        ParentArrayNode<Object> parent2 = parent.addChildOfTypeParentArrayNode("ARRAY_CHILD", 1,2);
+        ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root,0,3);
+                root.addChild(parent,"ARRAY");
+        ParentArrayNode<Object> parent2 = NodeFactory.createParentNodeArray(root,1,2);
+                parent.addChild(parent2,"ARRAY_CHILD");
 
-        parent2.addChildOfTypeValueNode("VALUE", Coordinates.from(0, 2));
-        int nextStart = parent2.duplicateOccurs(3);
+        parent2.addChild(NodeFactory.createValueNode(parent2, Coordinates.from(0, 2)),"VALUE");
+        int nextStart = 3;
+        nextStart = parent2.duplicateOccurs(nextStart);
         parent.duplicateOccurs(nextStart);
 
         ValueNode value_1 = (ValueNode) ((ParentNode) ((ParentArrayNode) parent.getChildArray()[0].getChilds().get("ARRAY_CHILD")).getChildArray()[0]).getChilds().get("VALUE");

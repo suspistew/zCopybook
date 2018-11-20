@@ -9,14 +9,14 @@ public class ParentNodeTest {
     @Test
     public void addParentNode_shouldAddAParentNodeToChilds(){
         ParentNode<Object> root = NodeFactory.createRootNode();
-        root.addChildOfTypeParentNode("parentName", 0);
+        root.addChild(NodeFactory.createParentNode(root,0),"parentName");
         Assert.assertEquals(true,root.getChilds().get("parentName").isParent());
     }
 
     @Test
     public void addValueNode_shouldAddAValueNodeToChilds(){
         ParentNode<Object> root = NodeFactory.createRootNode();
-        root.addChildOfTypeValueNode("child",  Coordinates.from(0,1));
+        root.addChild(NodeFactory.createValueNode(root,  Coordinates.from(0,1)),"child");
         Assert.assertEquals(false,root.getChilds().get("child").isParent());
     }
 

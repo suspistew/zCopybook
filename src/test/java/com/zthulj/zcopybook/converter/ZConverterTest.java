@@ -12,20 +12,20 @@ public class ZConverterTest {
 
     ZConverter converter = new ZConverter();
 
-    @Test (expected = IllegalArgumentException.class)
-    public void convert_nullString_shouldThrowIllegalArgExc(){
-        String s = null ;
+    @Test(expected = IllegalArgumentException.class)
+    public void convert_nullString_shouldThrowIllegalArgExc() {
+        String s = null;
         converter.convert(s);
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void convert_nullFile_shouldThrowIllegalArgExc() throws IOException {
         File f = null;
         converter.convert(f);
     }
 
     @Test
-    public void convert_emptyString_shouldReturnEmptyModel(){
+    public void convert_emptyString_shouldReturnEmptyModel() {
         Node node = converter.convert("");
         Assert.assertEquals(NodeFactory.createRootNode(), node);
     }
@@ -41,7 +41,7 @@ public class ZConverterTest {
         Node node = converter.convert(fileFromResource("copybook/singleParent.cbl"));
 
         ParentNode expected = NodeFactory.createRootNode();
-        expected.addChildOfTypeParentNode("CLIENT",1);
+        expected.addChild(NodeFactory.createParentNode(expected, 1), "CLIENT");
 
         Assert.assertEquals(expected, node);
     }
@@ -51,7 +51,7 @@ public class ZConverterTest {
         Node node = converter.convert(fileFromResource("copybook/singleParentWithComments.cbl"));
 
         ParentNode expected = NodeFactory.createRootNode();
-        expected.addChildOfTypeParentNode("CLIENT",1);
+        expected.addChild(NodeFactory.createParentNode(expected, 1), "CLIENT");
 
         Assert.assertEquals(expected, node);
     }
@@ -62,8 +62,9 @@ public class ZConverterTest {
         Node node = converter.convert(fileFromResource("copybook/singleParentOneChildValue.cbl"));
 
         ParentNode expected = NodeFactory.createRootNode();
-        ParentNode parent = expected.addChildOfTypeParentNode("CLIENT",1);
-        parent.addChildOfTypeValueNode("CLIENT-NAME", Coordinates.from(0,17));
+        ParentNode parent = NodeFactory.createParentNode(expected, 1);
+        expected.addChild(parent, "CLIENT");
+        parent.addChild(NodeFactory.createValueNode(parent, Coordinates.from(0, 17)), "CLIENT-NAME");
 
         Assert.assertEquals(expected, node);
     }
@@ -73,15 +74,21 @@ public class ZConverterTest {
         Node node = converter.convert(fileFromResource("copybook/manyParentManyChilds.cbl"));
 
         ParentNode rootExpected = NodeFactory.createRootNode();
-        ParentNode firstParent = rootExpected.addChildOfTypeParentNode("CLIENT", 1);
+        ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
 
-        ParentNode commonParent = firstParent.addChildOfTypeParentNode("CLIENT-COMMON-INFOS", 3);
-        commonParent.addChildOfTypeValueNode("FIRSTNAME",Coordinates.from(0,17));
-        commonParent.addChildOfTypeValueNode("LASTNAME",Coordinates.from(18,29));
+        rootExpected.addChild(firstParent, "CLIENT");
 
-        ParentNode advancedParent = firstParent.addChildOfTypeParentNode("CLIENT-ADVANCED-INFOS", 3);
-        advancedParent.addChildOfTypeValueNode("GENDER",Coordinates.from(30,31));
-        advancedParent.addChildOfTypeValueNode("AGE",Coordinates.from(32,34));
+        ParentNode commonParent = NodeFactory.createParentNode(firstParent, 3);
+        firstParent.addChild(commonParent, "CLIENT-COMMON-INFOS");
+
+
+        commonParent.addChild(NodeFactory.createValueNode(commonParent, Coordinates.from(0, 17)), "FIRSTNAME");
+        commonParent.addChild(NodeFactory.createValueNode(commonParent, Coordinates.from(18, 29)), "LASTNAME");
+
+        ParentNode advancedParent = NodeFactory.createParentNode(firstParent, 3);
+        firstParent.addChild(advancedParent, "CLIENT-ADVANCED-INFOS");
+        advancedParent.addChild(NodeFactory.createValueNode(advancedParent, Coordinates.from(30, 31)), "GENDER");
+        advancedParent.addChild(NodeFactory.createValueNode(advancedParent, Coordinates.from(32, 34)), "AGE");
 
         Assert.assertEquals(rootExpected, node);
 
@@ -91,12 +98,16 @@ public class ZConverterTest {
     public void convert_ParentChildsWith88Level_ShouldIgnore88Level() throws IOException {
         Node node = converter.convert(fileFromResource("copybook/parentManyChildWith88Level.cbl"));
         ParentNode rootExpected = NodeFactory.createRootNode();
-        ParentNode firstParent = rootExpected.addChildOfTypeParentNode("CLIENT", 1);
+        ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
 
-        ParentNode commonParent = firstParent.addChildOfTypeParentNode("CLIENT-COMMON-INFOS", 3);
-        commonParent.addChildOfTypeValueNode("FIRSTNAME",Coordinates.from(0,17));
-        commonParent.addChildOfTypeValueNode("LASTNAME",Coordinates.from(18,29));
-        commonParent.addChildOfTypeValueNode("GENDER",Coordinates.from(30,30));
+        rootExpected.addChild(firstParent, "CLIENT");
+
+        ParentNode commonParent =NodeFactory.createParentNode(firstParent,3);
+        firstParent.addChild(commonParent,"CLIENT-COMMON-INFOS");
+
+        commonParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.from(0, 17)),"FIRSTNAME");
+        commonParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.from(18, 29)),"LASTNAME");
+        commonParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.from(30, 30)),"GENDER");
 
         Assert.assertEquals(rootExpected, node);
 
@@ -106,12 +117,16 @@ public class ZConverterTest {
     public void convert_ParentWithOccurs_shouldReturnModelWithOccurs() throws IOException {
         Node node = converter.convert(fileFromResource("copybook/oneParentWithOccurs.cbl"));
         ParentNode rootExpected = NodeFactory.createRootNode();
-        ParentNode firstParent = rootExpected.addChildOfTypeParentNode("CLIENT",1);
-        ParentArrayNode parentArray = firstParent.addChildOfTypeParentArrayNode("CLIENT-COMMON-INFOS",3,3);
-        parentArray.addChildOfTypeValueNode("FIRSTNAME", Coordinates.from(0,17));
-        parentArray.addChildOfTypeValueNode("LASTNAME", Coordinates.from(18,29));
+        ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
+
+        rootExpected.addChild(firstParent, "CLIENT");
+        ParentArrayNode parentArray = NodeFactory.createParentNodeArray(firstParent,3,3);
+        firstParent.addChild(parentArray,"CLIENT-COMMON-INFOS");
+
+        parentArray.addChild(NodeFactory.createValueNode(parentArray,Coordinates.from(0, 17)),"FIRSTNAME");
+        parentArray.addChild(NodeFactory.createValueNode(parentArray,Coordinates.from(18, 29)),"LASTNAME");
         parentArray.duplicateOccurs(30);
-        Assert.assertEquals(node,rootExpected);
+        Assert.assertEquals(node, rootExpected);
     }
 
     @Test
@@ -119,14 +134,18 @@ public class ZConverterTest {
         Node node = converter.convert(fileFromResource("copybook/aParentAndSomeChildsAtSameLevel.cbl"));
 
         ParentNode rootExpected = NodeFactory.createRootNode();
-        ParentNode firstParent = rootExpected.addChildOfTypeParentNode("CLIENT",1);
-        ParentNode secondParent = firstParent.addChildOfTypeParentNode("CLIENT-COMMON-INFOS",3);
-        secondParent.addChildOfTypeValueNode("FIRSTNAME",Coordinates.from(0,17));
-        secondParent.addChildOfTypeValueNode("LASTNAME",Coordinates.from(18,29));
-        firstParent.addChildOfTypeValueNode("SOMETHING",Coordinates.from(30,47));
-        firstParent.addChildOfTypeValueNode("ELSE",Coordinates.from(48,65));
+        ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
 
-        Assert.assertEquals(rootExpected,node);
+        rootExpected.addChild(firstParent, "CLIENT");
+        ParentNode secondParent = NodeFactory.createParentNode(firstParent,3);
+                firstParent.addChild(secondParent,"CLIENT-COMMON-INFOS");
+
+        secondParent.addChild(NodeFactory.createValueNode(secondParent, Coordinates.from(0, 17)),"FIRSTNAME");
+        secondParent.addChild(NodeFactory.createValueNode(secondParent, Coordinates.from(18, 29)), "LASTNAME");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.from(30, 47)),"SOMETHING");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.from(48, 65)),"ELSE");
+
+        Assert.assertEquals(rootExpected, node);
 
 
     }
@@ -136,16 +155,21 @@ public class ZConverterTest {
         Node node = converter.convert(fileFromResource("copybook/aParentOccursAndSomeChildsAtSameLevel.cbl"));
 
         ParentNode rootExpected = NodeFactory.createRootNode();
-        ParentNode firstParent = rootExpected.addChildOfTypeParentNode("CLIENT",1);
-        ParentNode secondParent = firstParent.addChildOfTypeParentArrayNode("CLIENT-COMMON-INFOS",3,2);
-        secondParent.addChildOfTypeValueNode("FIRSTNAME",Coordinates.from(0,17));
-        secondParent.addChildOfTypeValueNode("LASTNAME",Coordinates.from(18,29));
-        ((ParentArrayNode) secondParent).duplicateOccurs(30);
+        ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
 
-        firstParent.addChildOfTypeValueNode("SOMETHING",Coordinates.from(60,77));
-        firstParent.addChildOfTypeValueNode("ELSE",Coordinates.from(78,95));
+        rootExpected.addChild(firstParent, "CLIENT");
+        ParentArrayNode secondParent = NodeFactory.createParentNodeArray(firstParent,3,2);
+        firstParent.addChild(secondParent,"CLIENT-COMMON-INFOS");
 
-        Assert.assertEquals(rootExpected,node);
+        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.from(0, 17)),"FIRSTNAME");
+        secondParent.addChild(NodeFactory.createValueNode(secondParent, Coordinates.from(18, 29)), "LASTNAME");
+
+        secondParent.duplicateOccurs(30);
+
+        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.from(60, 77)),"SOMETHING");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent, Coordinates.from(78, 95)),"ELSE");
+
+        Assert.assertEquals(rootExpected, node);
     }
 
     @Test
@@ -153,14 +177,18 @@ public class ZConverterTest {
         Node node = converter.convert(fileFromResource("copybook/aNodeWithARedefine.cbl"));
 
         ParentNode rootExpected = NodeFactory.createRootNode();
-        ParentNode firstParent = rootExpected.addChildOfTypeParentNode("CLIENT",1);
-        ParentNode secondParent = firstParent.addChildOfTypeParentNode("CLIENT-COMMON-INFOS",3);
-        secondParent.addChildOfTypeValueNode("FIRSTNAME",Coordinates.from(0,17));
-        secondParent.addChildOfTypeValueNode("LASTNAME",Coordinates.from(18,29));
-        firstParent.addChildOfTypeValueNode("SOMETHING",Coordinates.from(30,47));
-        firstParent.addChildOfTypeValueNode("ELSE",Coordinates.from(48,65));
+        ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
 
-        Assert.assertEquals(rootExpected,node);
+        rootExpected.addChild(firstParent, "CLIENT");
+        ParentNode secondParent = NodeFactory.createParentNode(firstParent,3);
+        firstParent.addChild(secondParent,"CLIENT-COMMON-INFOS");
+
+        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.from(0, 17)),"FIRSTNAME");
+        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.from(18, 29)),"LASTNAME");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent, Coordinates.from(30, 47)),"SOMETHING");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.from(48, 65)),"ELSE" );
+
+        Assert.assertEquals(rootExpected, node);
 
     }
 
@@ -169,22 +197,26 @@ public class ZConverterTest {
         Node node = converter.convert(fileFromResource("copybook/aNodeWithARedefineStruct.cbl"));
 
         ParentNode rootExpected = NodeFactory.createRootNode();
-        ParentNode firstParent = rootExpected.addChildOfTypeParentNode("CLIENT",1);
-        ParentNode secondParent = firstParent.addChildOfTypeParentNode("CLIENT-COMMON-INFOS",3);
-        secondParent.addChildOfTypeValueNode("FIRSTNAME",Coordinates.from(0,17));
-        secondParent.addChildOfTypeValueNode("LASTNAME",Coordinates.from(18,29));
-        firstParent.addChildOfTypeValueNode("SOMETHING",Coordinates.from(30,47));
-        firstParent.addChildOfTypeValueNode("ELSE",Coordinates.from(48,65));
+        ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
 
-        Assert.assertEquals(rootExpected,node);
+        rootExpected.addChild(firstParent, "CLIENT");
+        ParentNode secondParent = NodeFactory.createParentNode(firstParent,3);
+        firstParent.addChild(secondParent,"CLIENT-COMMON-INFOS");
+
+        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.from(0, 17)),"FIRSTNAME");
+        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.from(18, 29)),"LASTNAME");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent, Coordinates.from(30, 47)),"SOMETHING");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.from(48, 65)),"ELSE" );
+
+        Assert.assertEquals(rootExpected, node);
     }
 
     @Test
     public void convert_NodeWithSignedValue_ShouldDetectSigned() throws IOException {
         Node node = converter.convert(fileFromResource("copybook/simplecopybook.cbl"));
 
-        ParentNode parent = (ParentNode) ((ParentNode)node).getChilds().get("CLIENT");
-        ValueNode value = (ValueNode)parent. getChilds().get("SIGNEDINT");
+        ParentNode parent = (ParentNode) ((ParentNode) node).getChilds().get("CLIENT");
+        ValueNode value = (ValueNode) parent.getChilds().get("SIGNEDINT");
 
         Assert.assertEquals(ValueNode.ValueType.SIGNED_INT, value.getValueType());
 
@@ -194,8 +226,8 @@ public class ZConverterTest {
     public void convert_NodeWithSignedFloatValue_ShouldDetectSigned() throws IOException {
         Node node = converter.convert(fileFromResource("copybook/simplecopybook.cbl"));
 
-        ParentNode parent = (ParentNode) ((ParentNode)node).getChilds().get("CLIENT");
-        ValueNode value = (ValueNode)parent. getChilds().get("SIGNEDFLOAT");
+        ParentNode parent = (ParentNode) ((ParentNode) node).getChilds().get("CLIENT");
+        ValueNode value = (ValueNode) parent.getChilds().get("SIGNEDFLOAT");
 
         Assert.assertEquals(ValueNode.ValueType.SIGNED_FLOAT, value.getValueType());
 
@@ -205,8 +237,8 @@ public class ZConverterTest {
     public void convert_NodeWithPicX_ShouldDetectDefault() throws IOException {
         Node node = converter.convert(fileFromResource("copybook/simplecopybook.cbl"));
 
-        ParentNode parent = (ParentNode) ((ParentNode)node).getChilds().get("CLIENT");
-        ValueNode value = (ValueNode)parent. getChilds().get("PIC-X");
+        ParentNode parent = (ParentNode) ((ParentNode) node).getChilds().get("CLIENT");
+        ValueNode value = (ValueNode) parent.getChilds().get("PIC-X");
 
         Assert.assertEquals(ValueNode.ValueType.STRING, value.getValueType());
     }
@@ -215,9 +247,9 @@ public class ZConverterTest {
     public void convert_duplicateKey_ShouldRenameKeys() throws IOException {
         Node node = converter.convert(fileFromResource("copybook/simplecopybook.cbl"));
 
-        ParentNode parent = (ParentNode) ((ParentNode)node).getChilds().get("CLIENT");
-        ValueNode value = (ValueNode)parent. getChilds().get("DUPLICATE2");
-        ValueNode value2 = (ValueNode)parent. getChilds().get("DUPLICATE3");
+        ParentNode parent = (ParentNode) ((ParentNode) node).getChilds().get("CLIENT");
+        ValueNode value = (ValueNode) parent.getChilds().get("DUPLICATE2");
+        ValueNode value2 = (ValueNode) parent.getChilds().get("DUPLICATE3");
 
         Assert.assertNotNull(value);
         Assert.assertNotNull(value2);
@@ -225,8 +257,7 @@ public class ZConverterTest {
     }
 
 
-
-    private File fileFromResource(String path){
+    private File fileFromResource(String path) {
         return new File(getClass().getClassLoader().getResource(path).getFile());
     }
 }

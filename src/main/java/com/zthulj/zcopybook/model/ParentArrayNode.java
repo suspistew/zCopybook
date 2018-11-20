@@ -37,88 +37,33 @@ public class ParentArrayNode<T> extends ParentNode<T> {
         ParentNode model = this.childArray[0];
         for (int i = 1; i < this.childArray.length ; i++) {
             for(Map.Entry<String,Node> entry : (Set<Map.Entry<String,Node>>)model.getChilds().entrySet()){
-                if(entry.getValue() instanceof ValueNode){
-                    nextStart = populateValueNode(nextStart, this.childArray[i], entry);
-                }else if(entry.getValue() instanceof ParentArrayNode){
-                    nextStart = populateParentArrayNode(nextStart, this.childArray[i],entry);
-                }else if(entry.getValue() instanceof ParentNode){
-                   nextStart = populateParentNode(nextStart, this.childArray[i],entry);
-                }
-
+                nextStart = entry.getValue().copyInto(this.childArray[i], nextStart, entry.getKey());
             }
         }
         return nextStart;
     }
 
-    private int populateParentArrayNode(int nextStart, ParentNode<T> toPopulate, Map.Entry<String, Node> entry) {
+    @Override
+    public int copyInto(ParentNode destination, int cursorPosition, String name) {
+        ParentArrayNode newParentArray = NodeFactory.createParentNodeArray(destination,this.levelNumber,this.childArray.length);
+        destination.addChild(newParentArray,name);
 
-        ParentArrayNode parentArrayNode = (ParentArrayNode)entry.getValue();
-        ParentArrayNode parentArrayToPopulate = toPopulate.addChildOfTypeParentArrayNode(entry.getKey(),parentArrayNode.levelNumber,parentArrayNode.childArray.length);
-
-        for(int i = 0; i < parentArrayNode.getChildArray().length; i++){
-            ParentNode source = parentArrayNode.getChildArray()[i];
-            ParentNode destination = parentArrayToPopulate.getChildArray()[i];
-            nextStart = populateParentNodeChilds(nextStart, source, destination);
+        for(int i = 0; i < getChildArray().length; i++){
+            cursorPosition = copyChild(cursorPosition, getChildArray()[i], newParentArray.getChildArray()[i]);
         }
-
-        return nextStart;
+        return cursorPosition;
     }
 
-    private int populateParentNode(int nextStart, ParentNode<T> toPopulate, Map.Entry<String, Node> entry) {
-        ParentNode parentNode = (ParentNode)entry.getValue();
-        ParentNode current = toPopulate.addChildOfTypeParentNode(entry.getKey(),parentNode.levelNumber);
-        nextStart = populateParentNodeChilds(nextStart, parentNode, current);
-
-        return nextStart;
-    }
-
-    private int populateParentNodeChilds(int nextStart, ParentNode source, ParentNode destination) {
-        for (Map.Entry<String, Node> childEntry : (Set<Map.Entry<String,Node>>) source.getChilds().entrySet()) {
-            if(childEntry.getValue() instanceof ValueNode){
-                nextStart = populateValueNode(nextStart, destination, childEntry);
-            }else if(childEntry.getValue() instanceof ParentArrayNode){
-                nextStart = populateParentArrayNode(nextStart, destination, childEntry);
-            }else if(childEntry.getValue() instanceof ParentNode){
-                nextStart = populateParentNode(nextStart,destination,childEntry);
-            }
+    private int copyChild(int cursorPosition, ParentNode<T> source, ParentNode destination) {
+        for (Map.Entry<String, Node<T>> childEntry : source.getChilds().entrySet()) {
+            cursorPosition = childEntry.getValue().copyInto(destination,cursorPosition,childEntry.getKey());
         }
-        return nextStart;
-    }
-
-
-    private int populateValueNode(int nextStart, ParentNode<T> tParentNode, Map.Entry<String, Node> entry) {
-        Coordinates nextCoords = calculateCoordinates((ValueNode)entry.getValue(),nextStart);
-        tParentNode.addChildOfTypeValueNode(entry.getKey(),nextCoords);
-        nextStart += nextCoords.getSize();
-        return nextStart;
-    }
-
-
-    private Coordinates calculateCoordinates(ValueNode value, int nextStart) {
-        return Coordinates.from(nextStart, nextStart + value.getCoordinates().getSize() - 1);
-    }
-
-
-    @Override
-    public ValueNode<T> addChildOfTypeValueNode(String nodeName, Coordinates coords) {
-        return this.childArray[0].addChildOfTypeValueNode(nodeName, coords);
+        return cursorPosition;
     }
 
     @Override
-    public ValueNode<T> addChildOfTypeValueNode(String nodeName, Coordinates coords, ValueNode.ValueType type) {
-        return this.childArray[0].addChildOfTypeValueNode(nodeName, coords, type);
-    }
-
-    @Override
-    public ParentNode<T> addChildOfTypeParentNode(String nodeName, int lvlNumber) {
-        ParentNode newParent = this.childArray[0].addChildOfTypeParentNode(nodeName, lvlNumber);
-        return newParent;
-    }
-
-    @Override
-    public ParentArrayNode<T> addChildOfTypeParentArrayNode(String nodeName, int lvlNumber, int occursNumber) {
-        ParentArrayNode newParent = this.childArray[0].addChildOfTypeParentArrayNode(nodeName, lvlNumber,occursNumber);
-        return newParent;
+    public void addChild(Node node, String nodeName) {
+        this.childArray[0].addChild(node,nodeName);
     }
 
     public ParentNode<T>[] getChildArray() {

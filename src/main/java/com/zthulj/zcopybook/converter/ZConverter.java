@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,16 +21,26 @@ public final class ZConverter {
 
     private static Logger logger = LoggerFactory.getLogger(ZConverter.class);
 
-    private final Pattern nodePattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)");
+    private final Pattern parentPattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)");
     private final Pattern levelNbPattern = Pattern.compile("([^ ]*?)( {1})(.*?)");
     private final Pattern simpleValuePattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)( {1})([^ ]*?)( {1})([^ ]*)");
-    private final Pattern occursParentPattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)( {1})(OCCURS)( {1})([^ ]*)");
+    private final Pattern parentArrayPattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)( {1})(OCCURS)( {1})([^ ]*)");
     private final Pattern redefineParentPattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)( {1})(REDEFINES)( {1})([^ ]*)");
 
     private final Pattern picX_n_Pattern = Pattern.compile("(X|9)(\\({1})([^\\)]*?)(\\){1})");
     private final Pattern picS9_n_v99_Pattern = Pattern.compile("(S9)(\\({1})([^\\)]*?)(\\){1})(V)(9*)");
     private final Pattern picS9_n_Pattern = Pattern.compile("(S9)(\\({1})([^\\)]*?)(\\){1})");
     private final Pattern picX_pattern = Pattern.compile("X*");
+
+    class Cursor{
+        int cursorPosition;
+        ParentNode lastParent;
+
+        public Cursor(ParentNode lastParent) {
+            this.lastParent = lastParent;
+            this.cursorPosition = 0;
+        }
+    }
 
 
     /**
@@ -68,20 +80,18 @@ public final class ZConverter {
         if (logger.isDebugEnabled())
             logger.debug(String.format("Started the conversion of the copybook : \n[\n%s\n]", copybook));
 
-        String cleanedCopybook = cleanCopybook(copybook);
-
         RootNode node = NodeFactory.createRootNode();
-        ParentNode lastParent = node;
+        Cursor cursor = new Cursor(node);
 
-        int nextStart = 0;
-        String[] array = cleanedCopybook.split("\\.");
+       List<String> cleanedCopybook = cleanCopybook(copybook);
+
+        /* WIP : Temporary flags to ignore the redefines */
         boolean inANodeToIgnore = false;
         int levelToIgnore = 0;
+        /* End WIP */
 
-        for (String line : array) {
-            line = line.trim();
+        for (String line : cleanedCopybook) {
             int levelNb = getLevelNbFromLine(line);
-
 
             /* WIP : Temporary ignore the redefines */
             if (inANodeToIgnore && levelNb <= levelToIgnore)
@@ -100,42 +110,98 @@ public final class ZConverter {
             }
             /* End WIP */
 
-            while (lastParent != null && levelNb <= lastParent.getLevelNumber()) {
-                if (lastParent instanceof ParentArrayNode)
-                    nextStart = ((ParentArrayNode) lastParent).duplicateOccurs(nextStart);
-                lastParent = lastParent.getParent();
+            updateCursorWithCurrentLevelNb(cursor, levelNb);
+
+            boolean handled = handleSimpleParent(line,cursor,levelNb);
+
+            if(!handled){
+                handled = handleOccursParent(line,cursor,levelNb);
             }
-
-            Matcher nodeMatcher = nodePattern.matcher(line);
-            Matcher occursMatcher = occursParentPattern.matcher(line);
-            Matcher valueMatcher = simpleValuePattern.matcher(line);
-
-            if (nodeMatcher.matches())
-                lastParent = lastParent.addChildOfTypeParentNode(nodeMatcher.group(3), levelNb);
-            else if (occursMatcher.matches()) {
-                int occursNb = Integer.parseInt(occursMatcher.group(7));
-                lastParent = lastParent.addChildOfTypeParentArrayNode(occursMatcher.group(3), levelNb, occursNb);
-            } else if (valueMatcher.matches()) {
-                nextStart = addValueNode(lastParent, nextStart, valueMatcher);
+            if(!handled){
+                handleValue(line,cursor);
             }
-
         }
 
-        if (lastParent instanceof ParentArrayNode)
-            ((ParentArrayNode) lastParent).duplicateOccurs(nextStart);
+        if (cursor.lastParent instanceof ParentArrayNode)
+            ((ParentArrayNode) cursor.lastParent).duplicateOccurs(cursor.cursorPosition);
 
         return node;
     }
 
-    private String cleanCopybook(String copybook) {
+    private List<String> cleanCopybook(String copybook) {
+        String cleanedLinedCopybook = cleanLines(copybook);
+        List<String> cleanedCopybook = new ArrayList<>();
+        for (String field:cleanedLinedCopybook.split("\\.")) {
+            cleanedCopybook.add(field.trim());
+        }
+        return cleanedCopybook;
+    }
+
+    private String cleanLines(String copybook) {
         String result = "";
         for (String line : copybook.split("\\n")) {
             if (lineShouldBeIgnored(line))
                 continue;
 
-            result += " " + line.replaceAll(" +", " ");
+            result += " " + line.trim();
         }
-        return result;
+        return result.replaceAll(" +", " ");
+    }
+
+    private boolean lineShouldBeIgnored(String line) {
+        boolean shouldBeIgnored =
+                line.trim().startsWith("*") || line.trim().startsWith("88");
+
+        if (shouldBeIgnored && logger.isDebugEnabled())
+            logger.debug("Ignoring line : " + line);
+
+        return shouldBeIgnored;
+    }
+
+    private int getLevelNbFromLine(String line) {
+        Matcher matcher = levelNbPattern.matcher(line);
+        if (!matcher.matches())
+            return 0;
+        return Integer.parseInt(matcher.group(1));
+    }
+
+    private void updateCursorWithCurrentLevelNb(Cursor cursor, int levelNb) {
+        while (cursor.lastParent != null && levelNb <= cursor.lastParent.getLevelNumber()) {
+            if (cursor.lastParent instanceof ParentArrayNode)
+                cursor.cursorPosition = ((ParentArrayNode) cursor.lastParent).duplicateOccurs(cursor.cursorPosition);
+            cursor.lastParent = cursor.lastParent.getParent();
+        }
+    }
+
+    private boolean handleSimpleParent(String line, Cursor cursor, int levelNb) {
+        Matcher nodeMatcher = parentPattern.matcher(line);
+        if (nodeMatcher.matches()) {
+            ParentNode newParent = NodeFactory.createParentNode(cursor.lastParent, levelNb);
+            cursor.lastParent.addChild(newParent, nodeMatcher.group(3));
+            cursor.lastParent = newParent;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean handleOccursParent(String line, Cursor cursor, int levelNb) {
+        Matcher occursMatcher = parentArrayPattern.matcher(line);
+        if (occursMatcher.matches()) {
+            int occursNb = Integer.parseInt(occursMatcher.group(7));
+            ParentNode newParent = NodeFactory.createParentNodeArray(cursor.lastParent, levelNb, occursNb);
+            cursor.lastParent.addChild(newParent, occursMatcher.group(3));
+            cursor.lastParent = newParent;
+            return true;
+        }
+        return false;
+    }
+
+    private void handleValue(String line, Cursor cursor) {
+        Matcher valueMatcher = simpleValuePattern.matcher(line);
+
+        if (valueMatcher.matches()) {
+            cursor.cursorPosition = addValueNode(cursor.lastParent, cursor.cursorPosition, valueMatcher);
+        }
     }
 
     private int addValueNode(ParentNode lastParent, int nextStart, Matcher valueMatcher) {
@@ -162,30 +228,11 @@ public final class ZConverter {
             fieldSize = dataType.length();
         }
 
-        try {
-            lastParent.addChildOfTypeValueNode(valueMatcher.group(3), Coordinates.from(nextStart, nextStart + fieldSize - 1), type);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Node node = NodeFactory.createValueNode(lastParent, Coordinates.from(nextStart, nextStart + fieldSize - 1), type);
+        lastParent.addChild(node, valueMatcher.group(3));
+
         nextStart += fieldSize;
         return nextStart;
-    }
-
-    private int getLevelNbFromLine(String line) {
-        Matcher matcher = levelNbPattern.matcher(line);
-        if (!matcher.matches())
-            return 0;
-        return Integer.parseInt(matcher.group(1));
-    }
-
-    private boolean lineShouldBeIgnored(String line) {
-        boolean shouldBeIgnored =
-                line.startsWith("*") || line.startsWith("88");
-
-        if (shouldBeIgnored && logger.isDebugEnabled())
-            logger.debug("Ignoring line : " + line);
-
-        return shouldBeIgnored;
     }
 
 

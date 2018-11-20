@@ -14,12 +14,11 @@ public class ParentArrayNodeSerializerTest {
     @Test
     public void serialize_parentArrayWithChilds_shouldReturnJsonArray() throws JsonProcessingException {
         ParentArrayNode parent = NodeFactory.createParentNodeArray(null,1,3);
-        parent.addChildOfTypeValueNode("Hello", Coordinates.from(0,2));
+        parent.addChild(NodeFactory.createValueNode(parent,Coordinates.from(0,2)),"Hello");
         parent.duplicateOccurs(3);
         for (ParentNode parenNode : parent.getChildArray()) {
             ValueNode value = (ValueNode) parenNode.getChilds().get("Hello");
             value.setValue("Val");
-
         }
 
         String result = objectMapper.writeValueAsString(parent);
@@ -30,8 +29,12 @@ public class ParentArrayNodeSerializerTest {
     @Test
     public void serialize_rootWithParentArrayWithChilds_shouldReturnJsonArray() throws JsonProcessingException {
         RootNode root = NodeFactory.createRootNode();
-        ParentArrayNode parent = root.addChildOfTypeParentArrayNode("arraynode",1,3);
-        parent.addChildOfTypeValueNode("Hello", Coordinates.from(0,2));
+
+        ParentArrayNode parent = NodeFactory.createParentNodeArray(root,1,3);
+        root.addChild(parent,"arraynode");
+
+        parent.addChild(NodeFactory.createValueNode(parent,Coordinates.from(0,2)),"Hello");
+
         parent.duplicateOccurs(3);
         for (ParentNode parenNode : parent.getChildArray()) {
             ValueNode value = (ValueNode) parenNode.getChilds().get("Hello");

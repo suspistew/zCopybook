@@ -1,6 +1,7 @@
 package com.zthulj.zcopybook.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.zthulj.zcopybook.factory.NodeFactory;
 import com.zthulj.zcopybook.serializer.ValueNodeSerializer;
 
 import java.util.Objects;
@@ -25,6 +26,19 @@ public final class ValueNode<T> extends Node<T> {
         super(parent);
         this.coordinates = coordinates;
         this.valueType = valueType;
+    }
+
+    @Override
+    public int copyInto(ParentNode destination, int cursorPosition, String name) {
+        Coordinates nextCoords = calculateCoordinates(this, cursorPosition);
+        ValueNode valueNode = NodeFactory.createValueNode(destination,nextCoords,this.valueType);
+        destination.addChild(valueNode,name);
+        cursorPosition += nextCoords.getSize();
+        return cursorPosition;
+    }
+
+    private Coordinates calculateCoordinates(ValueNode value, int nextStart) {
+        return Coordinates.from(nextStart, nextStart + value.getCoordinates().getSize() - 1);
     }
 
     @Override

@@ -22,7 +22,8 @@ public class ParentNodeSerializerTest {
     @Test
     public void serialize_rootNodeParentChild_shouldReturnJsonWithEmptyChild() throws JsonProcessingException {
         ParentNode<String> root = NodeFactory.createRootNode();
-        root.addChildOfTypeParentNode("parentName", 0);
+        ParentNode parentNode = NodeFactory.createParentNode(root,0);
+        root.addChild(parentNode,"parentName");
         String result = objectMapper.writeValueAsString(root);
         Assert.assertEquals("{\"parentName\":{}}", result);
     }
@@ -30,8 +31,10 @@ public class ParentNodeSerializerTest {
     @Test
     public void serialize_rootNodeParentChildWithOneChildValue_shouldReturnJsonWithChild() throws JsonProcessingException {
         ParentNode<String> root = NodeFactory.createRootNode();
-        ParentNode<String> parent = root.addChildOfTypeParentNode("parentName", 0);
-        ValueNode<String> child = parent.addChildOfTypeValueNode("aValueChild", null);
+        ParentNode<String> parent = NodeFactory.createParentNode(root,0);
+        root.addChild(parent,"parentName");
+        ValueNode<String> child = NodeFactory.createValueNode(parent,null);
+                parent.addChild(child,"aValueChild");
         child.setValue("theValue");
         String result = objectMapper.writeValueAsString(root);
         Assert.assertEquals("{\"parentName\":{\"aValueChild\":\"theValue\"}}", result);

@@ -10,7 +10,6 @@ public class NodeFactory {
         return new RootNode<T>(new LinkedHashMap());
     }
 
-
     public static <T> ParentNode<T> createParentNode(ParentNode<T> parent, int lvlNumber) {
         return new ParentNode<T>(parent, new LinkedHashMap<>(), lvlNumber);
     }
