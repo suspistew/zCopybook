@@ -1,6 +1,7 @@
 package com.zthulj.zcopybook.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,12 +14,14 @@ import lombok.ToString;
 @ToString(exclude="parent")
 @EqualsAndHashCode(exclude="parent")
 public abstract class Node<T> implements Serializable {
-    
+
 	private static final long serialVersionUID = -3514066933920187128L;
 	private ParentNode<T> parent;
 
-	
+
     public abstract boolean isParent();
 
     public abstract int copyInto(ParentNode<T> destination, int cursorPosition, String name);
+
+    public abstract List<ValueNode<T>> getAllValueNodes();
 }

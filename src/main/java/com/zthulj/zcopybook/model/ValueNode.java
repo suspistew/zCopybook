@@ -9,14 +9,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Collections;
+import java.util.List;
+
 @JsonSerialize(using = ValueNodeSerializer.class)
 @Getter
 @EqualsAndHashCode(callSuper=true)
 @ToString
 public final class ValueNode<T> extends Node<T> {
-    
+
 	private static final long serialVersionUID = -3833993476849963456L;
-	
+
 	@Setter
 	private T value;
     private Coordinates coordinates;
@@ -48,5 +51,10 @@ public final class ValueNode<T> extends Node<T> {
     @Override
     public boolean isParent() {
         return false;
+    }
+
+    @Override
+    public List<ValueNode<T>> getAllValueNodes() {
+        return Collections.singletonList(this);
     }
 }

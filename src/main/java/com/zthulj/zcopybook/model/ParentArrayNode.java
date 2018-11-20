@@ -1,5 +1,7 @@
 package com.zthulj.zcopybook.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -15,11 +17,11 @@ import lombok.ToString;
 @JsonSerialize(using = ParentArrayNodeSerializer.class)
 @ToString
 public class ParentArrayNode<T> extends ParentNode<T> {
-	
+
 	private static final long serialVersionUID = 943387055163029210L;
-	
+
 	private ParentNode<T>[] childArray;
-	
+
     public ParentArrayNode(ParentNode<T> parent, int levelNumber, int occursNumber) {
         super(parent, null, levelNumber);
         if (occursNumber < 1)
@@ -66,5 +68,14 @@ public class ParentArrayNode<T> extends ParentNode<T> {
     @Override
     public void addChild(Node<T> node, String nodeName) {
         this.childArray[0].addChild(node,nodeName);
+    }
+
+    @Override
+    public List<ValueNode<T>> getAllValueNodes() {
+        List<ValueNode<T>> allValueNodes = new ArrayList<>();
+        for (int i = 0; i < childArray.length; i++) {
+            allValueNodes.addAll(childArray[i].getAllValueNodes());
+        }
+        return allValueNodes;
     }
 }

@@ -1,4 +1,4 @@
-package com.zthulj.zcopybook.converter;
+package com.zthulj.zcopybook.engine;
 
 
 import com.zthulj.zcopybook.factory.NodeFactory;
@@ -21,16 +21,16 @@ public final class ZLoader {
 
     private static Logger logger = LoggerFactory.getLogger(ZLoader.class);
 
-    private final Pattern parentPattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)");
-    private final Pattern levelNbPattern = Pattern.compile("([^ ]*?)( {1})(.*?)");
-    private final Pattern simpleValuePattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)( {1})([^ ]*?)( {1})([^ ]*)");
-    private final Pattern parentArrayPattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)( {1})(OCCURS)( {1})([^ ]*)");
-    private final Pattern redefineParentPattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)( {1})(REDEFINES)( {1})([^ ]*)");
+    private static final Pattern parentPattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)");
+    private static final Pattern levelNbPattern = Pattern.compile("([^ ]*?)( {1})(.*?)");
+    private static final Pattern simpleValuePattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)( {1})([^ ]*?)( {1})([^ ]*)");
+    private static final Pattern parentArrayPattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)( {1})(OCCURS)( {1})([^ ]*)");
+    private static final Pattern redefineParentPattern = Pattern.compile("([^ ]*?)( {1})([^ ]*?)( {1})(REDEFINES)( {1})([^ ]*)");
 
-    private final Pattern picX_n_Pattern = Pattern.compile("(X|9)(\\({1})([^\\)]*?)(\\){1})");
-    private final Pattern picS9_n_v99_Pattern = Pattern.compile("(S9)(\\({1})([^\\)]*?)(\\){1})(V)(9*)");
-    private final Pattern picS9_n_Pattern = Pattern.compile("(S9)(\\({1})([^\\)]*?)(\\){1})");
-    private final Pattern picX_pattern = Pattern.compile("X*");
+    private static final Pattern picX_n_Pattern = Pattern.compile("(X|9)(\\({1})([^\\)]*?)(\\){1})");
+    private static final Pattern picS9_n_v99_Pattern = Pattern.compile("(S9)(\\({1})([^\\)]*?)(\\){1})(V)(9*)");
+    private static final Pattern picS9_n_Pattern = Pattern.compile("(S9)(\\({1})([^\\)]*?)(\\){1})");
+    private static final Pattern picX_pattern = Pattern.compile("X*");
 
     class Cursor{
         int cursorPosition;
@@ -42,17 +42,16 @@ public final class ZLoader {
         }
     }
 
-
     /**
      * @param copybook a file containing the copybook format. Will be read with StandardCharsets.UTF_8 charset
      * @return the root node containing the converted copybook
      * @throws IOException When copybook can't be read
      */
-    public RootNode load(@NotNull final File copybook) throws IOException {
+    public ZCopyBook load(@NotNull final File copybook) throws IOException {
         if (null == copybook)
             throw new IllegalArgumentException("copybook can't be null !");
 
-        return load(copybook, StandardCharsets.UTF_8);
+        return this.load(copybook, StandardCharsets.UTF_8);
     }
 
     /**
@@ -61,11 +60,11 @@ public final class ZLoader {
      * @return the root node containing the converted copybook
      * @throws IOException When copybook can't be read
      */
-    public RootNode load(@NotNull final File copybook, @NotNull final Charset charset) throws IOException {
+    public ZCopyBook load(@NotNull final File copybook, @NotNull final Charset charset) throws IOException {
         if (null == copybook || null == charset)
             throw new IllegalArgumentException("copybook and charset can't be null !");
 
-        return load(FileUtils.readFileToString(copybook, charset));
+        return this.load(FileUtils.readFileToString(copybook, charset));
     }
 
 
@@ -73,17 +72,17 @@ public final class ZLoader {
      * @param copybook a String containing the copybook format
      * @return the root node containing the converted copybook
      */
-    public RootNode load(@NotNull final String copybook) {
+    public ZCopyBook load(@NotNull final String copybook) {
         if (null == copybook)
             throw new IllegalArgumentException("copybook can't be null !");
 
         if (logger.isDebugEnabled())
             logger.debug(String.format("Started the conversion of the copybook : \n[\n%s\n]", copybook));
 
-        RootNode node = NodeFactory.createRootNode();
-        Cursor cursor = new Cursor(node);
+        RootNode root = NodeFactory.createRootNode();
+        Cursor cursor = new Cursor(root);
 
-       List<String> cleanedCopybook = cleanCopybook(copybook);
+       List<String> cleanedCopybook = this.cleanCopybook(copybook);
 
         /* WIP : Temporary flags to ignore the redefines */
         boolean inANodeToIgnore = false;
@@ -91,13 +90,13 @@ public final class ZLoader {
         /* End WIP */
 
         for (String line : cleanedCopybook) {
-            int levelNb = getLevelNbFromLine(line);
+            int levelNb = this.getLevelNbFromLine(line);
 
             /* WIP : Temporary ignore the redefines */
             if (inANodeToIgnore && levelNb <= levelToIgnore)
                 inANodeToIgnore = false;
 
-            Matcher redefineParentMatcher = redefineParentPattern.matcher(line);
+            Matcher redefineParentMatcher = this.redefineParentPattern.matcher(line);
 
             if (redefineParentMatcher.matches()) {
                 inANodeToIgnore = true;
@@ -105,31 +104,31 @@ public final class ZLoader {
             }
 
             if (inANodeToIgnore) {
-                if (logger.isDebugEnabled()) logger.debug("Ignoring line : " + line + ".");
+                logger.debug("Ignoring line : {}.", line);
                 continue;
             }
             /* End WIP */
 
-            updateCursorWithCurrentLevelNb(cursor, levelNb);
+            this.updateCursorWithCurrentLevelNb(cursor, levelNb);
 
-            boolean handled = handleSimpleParent(line,cursor,levelNb);
+            boolean handled = this.handleSimpleParent(line,cursor,levelNb);
 
             if(!handled){
-                handled = handleOccursParent(line,cursor,levelNb);
+                handled = this.handleOccursParent(line,cursor,levelNb);
             }
             if(!handled){
-                handleValue(line,cursor);
+                this.handleValue(line,cursor);
             }
         }
 
         if (cursor.lastParent instanceof ParentArrayNode)
             ((ParentArrayNode) cursor.lastParent).duplicateOccurs(cursor.cursorPosition);
 
-        return node;
+        return ZCopyBook.from(root);
     }
 
     private List<String> cleanCopybook(final String copybook) {
-        String cleanedLinedCopybook = cleanLines(copybook);
+        String cleanedLinedCopybook = this.cleanLines(copybook);
         List<String> cleanedCopybook = new ArrayList<>();
         for (String field:cleanedLinedCopybook.split("\\.")) {
             cleanedCopybook.add(field.trim());
@@ -138,24 +137,25 @@ public final class ZLoader {
     }
 
     private String cleanLines(final String copybook) {
-        String result = "";
-        for (String line : copybook.split("\\n")) {
-            if (lineShouldBeIgnored(line))
-                continue;
+        StringBuilder builder = new StringBuilder();
 
-            result += " " + line.trim();
+        for (String line : copybook.split("\\n")) {
+            if (lineShouldBeAdded(line)) {
+                builder.append(" ").append(line.trim());
+            }
         }
-        return result.replaceAll(" +", " ");
+        return builder.toString().replaceAll(" +", " ");
     }
 
-    private boolean lineShouldBeIgnored(final String line) {
+    private boolean lineShouldBeAdded(final String line) {
         boolean shouldBeIgnored =
                 line.trim().startsWith("*") || line.trim().startsWith("88");
 
-        if (shouldBeIgnored && logger.isDebugEnabled())
-            logger.debug("Ignoring line : " + line);
+        if (shouldBeIgnored) {
+            logger.debug("Ignoring line : {}", line);
+        }
 
-        return shouldBeIgnored;
+        return !shouldBeIgnored;
     }
 
     private int getLevelNbFromLine(final String line) {
@@ -185,7 +185,7 @@ public final class ZLoader {
     }
 
     private boolean handleOccursParent(final String line, Cursor cursor, final int levelNb) {
-        Matcher occursMatcher = parentArrayPattern.matcher(line);
+        Matcher occursMatcher = this.parentArrayPattern.matcher(line);
         if (occursMatcher.matches()) {
             int occursNb = Integer.parseInt(occursMatcher.group(7));
             ParentNode newParent = NodeFactory.createParentNodeArray(cursor.lastParent, levelNb, occursNb);
@@ -197,7 +197,7 @@ public final class ZLoader {
     }
 
     private void handleValue(final String line, Cursor cursor) {
-        Matcher valueMatcher = simpleValuePattern.matcher(line);
+        Matcher valueMatcher = this.simpleValuePattern.matcher(line);
 
         if (valueMatcher.matches()) {
             cursor.cursorPosition = addValueNode(cursor.lastParent, cursor.cursorPosition, valueMatcher);
@@ -211,10 +211,10 @@ public final class ZLoader {
 
         String dataType = valueMatcher.group(7);
 
-        Matcher defaultMatcher = picX_n_Pattern.matcher(dataType);
-        Matcher signedIntMatcher = picS9_n_Pattern.matcher(dataType);
-        Matcher signedFloatMatcher = picS9_n_v99_Pattern.matcher(dataType);
-        Matcher picXMatcher = picX_pattern.matcher(dataType);
+        Matcher defaultMatcher = this.picX_n_Pattern.matcher(dataType);
+        Matcher signedIntMatcher = this.picS9_n_Pattern.matcher(dataType);
+        Matcher signedFloatMatcher = this.picS9_n_v99_Pattern.matcher(dataType);
+        Matcher picXMatcher = this.picX_pattern.matcher(dataType);
 
         if (defaultMatcher.matches()) {
             fieldSize = Integer.parseInt(defaultMatcher.group(3));

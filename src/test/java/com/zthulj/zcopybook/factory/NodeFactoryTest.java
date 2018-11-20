@@ -1,7 +1,6 @@
 package com.zthulj.zcopybook.factory;
 
 import com.zthulj.zcopybook.model.Coordinates;
-import com.zthulj.zcopybook.model.Node;
 import com.zthulj.zcopybook.model.ParentNode;
 import com.zthulj.zcopybook.model.ValueNode;
 import org.junit.Assert;

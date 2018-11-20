@@ -1,6 +1,8 @@
 package com.zthulj.zcopybook.model;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -16,7 +18,7 @@ import lombok.ToString;
 @JsonSerialize(using = ParentNodeSerializer.class)
 @ToString
 public class ParentNode<T> extends Node<T> {
-	
+
 	private static final long serialVersionUID = -7011113266458098086L;
 	private LinkedHashMap<String,Node<T>> childs;
     protected int levelNumber;
@@ -48,6 +50,13 @@ public class ParentNode<T> extends Node<T> {
         while(this.getChilds().containsKey(name))
             name = nodeName + (++i);
         return name;
+    }
+
+    @Override
+    public List<ValueNode<T>> getAllValueNodes() {
+        List<ValueNode<T>> allValueNodes = new ArrayList<>();
+        childs.forEach((k,v)->allValueNodes.addAll(v.getAllValueNodes()));
+        return allValueNodes;
     }
 
     @Override

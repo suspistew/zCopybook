@@ -1,4 +1,4 @@
-package com.zthulj.zcopybook.converter;
+package com.zthulj.zcopybook.engine;
 
 import com.zthulj.zcopybook.factory.NodeFactory;
 import com.zthulj.zcopybook.model.*;
@@ -26,19 +26,19 @@ public class ZLoaderTest {
 
     @Test
     public void convert_emptyString_shouldReturnEmptyModel() {
-        Node node = converter.load("");
+        Node node = converter.load("").getRootNode();
         Assert.assertEquals(NodeFactory.createRootNode(), node);
     }
 
     @Test
     public void convert_emptyFile_shouldReturnEmptyModel() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/empty.cbl"));
+        Node node = converter.load(fileFromResource("copybook/empty.cbl")).getRootNode();
         Assert.assertEquals(NodeFactory.createRootNode(), node);
     }
 
     @Test
     public void convert_aSingleParent_shouldReturnASingleParentModel() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/singleParent.cbl"));
+        Node node = converter.load(fileFromResource("copybook/singleParent.cbl")).getRootNode();
 
         ParentNode expected = NodeFactory.createRootNode();
         expected.addChild(NodeFactory.createParentNode(expected, 1), "CLIENT");
@@ -48,7 +48,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_aSingleParentWithComments_shouldReturnASingleParentModel() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/singleParentWithComments.cbl"));
+        Node node = converter.load(fileFromResource("copybook/singleParentWithComments.cbl")).getRootNode();
 
         ParentNode expected = NodeFactory.createRootNode();
         expected.addChild(NodeFactory.createParentNode(expected, 1), "CLIENT");
@@ -59,7 +59,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_SingleParentOneChildValue_shouldReturnASingleParentModelWithAChild() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/singleParentOneChildValue.cbl"));
+        Node node = converter.load(fileFromResource("copybook/singleParentOneChildValue.cbl")).getRootNode();
 
         ParentNode expected = NodeFactory.createRootNode();
         ParentNode parent = NodeFactory.createParentNode(expected, 1);
@@ -71,7 +71,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_ManyParentManyChilds_shouldReturnAManyParentWithManyChildModel() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/manyParentManyChilds.cbl"));
+        Node node = converter.load(fileFromResource("copybook/manyParentManyChilds.cbl")).getRootNode();
 
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
@@ -96,7 +96,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_ParentChildsWith88Level_ShouldIgnore88Level() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/parentManyChildWith88Level.cbl"));
+        Node node = converter.load(fileFromResource("copybook/parentManyChildWith88Level.cbl")).getRootNode();
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
 
@@ -115,7 +115,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_ParentWithOccurs_shouldReturnModelWithOccurs() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/oneParentWithOccurs.cbl"));
+        Node node = converter.load(fileFromResource("copybook/oneParentWithOccurs.cbl")).getRootNode();
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
 
@@ -131,7 +131,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_NodeWithAParentAndSomeValues_shouldReturnModelOK() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/aParentAndSomeChildsAtSameLevel.cbl"));
+        Node node = converter.load(fileFromResource("copybook/aParentAndSomeChildsAtSameLevel.cbl")).getRootNode();
 
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
@@ -152,7 +152,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_NodeWithAParentArrayAndSomeValuesAtSameLevel_shouldReturnModelOK() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/aParentOccursAndSomeChildsAtSameLevel.cbl"));
+        Node node = converter.load(fileFromResource("copybook/aParentOccursAndSomeChildsAtSameLevel.cbl")).getRootNode();
 
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
@@ -174,7 +174,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_NodeWithRedefineField_ShouldIgnoreRedefine() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/aNodeWithARedefine.cbl"));
+        Node node = converter.load(fileFromResource("copybook/aNodeWithARedefine.cbl")).getRootNode();
 
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
@@ -194,7 +194,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_NodeWithRedefineStruct_ShouldIgnoreRedefine() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/aNodeWithARedefineStruct.cbl"));
+        Node node = converter.load(fileFromResource("copybook/aNodeWithARedefineStruct.cbl")).getRootNode();
 
         ParentNode rootExpected = NodeFactory.createRootNode();
         ParentNode firstParent = NodeFactory.createParentNode(rootExpected, 1);
@@ -213,7 +213,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_NodeWithSignedValue_ShouldDetectSigned() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/simplecopybook.cbl"));
+        Node node = converter.load(fileFromResource("copybook/simplecopybook.cbl")).getRootNode();
 
         ParentNode parent = (ParentNode) ((ParentNode) node).getChilds().get("CLIENT");
         ValueNode value = (ValueNode) parent.getChilds().get("SIGNEDINT");
@@ -224,7 +224,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_NodeWithSignedFloatValue_ShouldDetectSigned() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/simplecopybook.cbl"));
+        Node node = converter.load(fileFromResource("copybook/simplecopybook.cbl")).getRootNode();
 
         ParentNode parent = (ParentNode) ((ParentNode) node).getChilds().get("CLIENT");
         ValueNode value = (ValueNode) parent.getChilds().get("SIGNEDFLOAT");
@@ -235,7 +235,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_NodeWithPicX_ShouldDetectDefault() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/simplecopybook.cbl"));
+        Node node = converter.load(fileFromResource("copybook/simplecopybook.cbl")).getRootNode();
 
         ParentNode parent = (ParentNode) ((ParentNode) node).getChilds().get("CLIENT");
         ValueNode value = (ValueNode) parent.getChilds().get("PIC-X");
@@ -245,7 +245,7 @@ public class ZLoaderTest {
 
     @Test
     public void convert_duplicateKey_ShouldRenameKeys() throws IOException {
-        Node node = converter.load(fileFromResource("copybook/simplecopybook.cbl"));
+        Node node = converter.load(fileFromResource("copybook/simplecopybook.cbl")).getRootNode();
 
         ParentNode parent = (ParentNode) ((ParentNode) node).getChilds().get("CLIENT");
         ValueNode value = (ValueNode) parent.getChilds().get("DUPLICATE2");
@@ -253,9 +253,7 @@ public class ZLoaderTest {
 
         Assert.assertNotNull(value);
         Assert.assertNotNull(value2);
-
     }
-
 
     private File fileFromResource(String path) {
         return new File(getClass().getClassLoader().getResource(path).getFile());
