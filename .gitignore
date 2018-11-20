@@ -1,3 +1,7 @@
 target
 .idea
 .gradle
+.DS_Store
+.classpath
+.project
+.settings
