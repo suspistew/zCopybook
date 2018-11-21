@@ -228,7 +228,7 @@ public final class ZLoader {
             fieldSize = dataType.length();
         }
 
-        Node node = NodeFactory.createValueNode(lastParent, Coordinates.create(nextStart, nextStart + fieldSize - 1), type);
+        Node node = NodeFactory.createValueNode(lastParent, Coordinates.create(nextStart, nextStart + fieldSize), type);
         lastParent.addChild(node, valueMatcher.group(3));
 
         nextStart += fieldSize;

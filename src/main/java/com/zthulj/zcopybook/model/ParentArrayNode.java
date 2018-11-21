@@ -1,16 +1,15 @@
 package com.zthulj.zcopybook.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zthulj.zcopybook.factory.NodeFactory;
 import com.zthulj.zcopybook.serializer.ParentArrayNodeSerializer;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper=true)
 @Getter

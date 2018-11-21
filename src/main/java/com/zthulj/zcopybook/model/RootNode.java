@@ -2,7 +2,6 @@ package com.zthulj.zcopybook.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zthulj.zcopybook.serializer.ParentNodeSerializer;
-
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 

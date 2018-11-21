@@ -1,19 +1,15 @@
 package com.zthulj.zcopybook.model;
 
-import java.io.Serializable;
+import lombok.*;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import java.io.Serializable;
 
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor(access=AccessLevel.PRIVATE)
 @ToString
 public final class Coordinates implements Serializable {
-    
+
 	private static final long serialVersionUID = 6100935963637812753L;
 	private final int start;
     private final int end;
@@ -25,6 +21,6 @@ public final class Coordinates implements Serializable {
     }
 
     public int getSize(){
-        return end - start + 1;
+        return end - start;
     }
 }

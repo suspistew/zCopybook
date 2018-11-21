@@ -1,13 +1,9 @@
 package com.zthulj.zcopybook.model;
 
+import lombok.*;
+
 import java.io.Serializable;
 import java.util.List;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
 
 @AllArgsConstructor(access=AccessLevel.PROTECTED)
 @Getter
@@ -20,6 +16,6 @@ public abstract class Node<T> implements Serializable {
 	private final boolean parent;
 
     public abstract int copyInto(ParentNode<T> destination, int cursorPosition, String name);
-
     public abstract List<ValueNode<T>> getAllValueNodes();
+
 }

@@ -3,7 +3,6 @@ package com.zthulj.zcopybook.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zthulj.zcopybook.factory.NodeFactory;
 import com.zthulj.zcopybook.serializer.ValueNodeSerializer;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,7 +44,7 @@ public final class ValueNode<T> extends Node<T> {
     }
 
     private Coordinates calculateCoordinates(ValueNode<T> value, int nextStart) {
-        return Coordinates.create(nextStart, nextStart + value.getCoordinates().getSize() - 1);
+        return Coordinates.create(nextStart, nextStart + value.getCoordinates().getSize());
     }
 
     @Override

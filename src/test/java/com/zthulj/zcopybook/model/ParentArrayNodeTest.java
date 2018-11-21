@@ -78,15 +78,15 @@ public class ParentArrayNodeTest {
         ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
         parent.addChild(NodeFactory.createValueNode(parent,Coordinates.create(0, 1)),"TEST");
 
-        parent.duplicateOccurs(2);
+        parent.duplicateOccurs(1);
 
         ValueNode child2 = (ValueNode) parent.getChildArray()[1].getChilds().get("TEST");
         ValueNode child3 = (ValueNode) parent.getChildArray()[2].getChilds().get("TEST");
 
         Assert.assertNotNull(child2);
         Assert.assertNotNull(child3);
-        Assert.assertEquals(Coordinates.create(2, 3), child2.getCoordinates());
-        Assert.assertEquals(Coordinates.create(4, 5), child3.getCoordinates());
+        Assert.assertEquals(Coordinates.create(1, 2), child2.getCoordinates());
+        Assert.assertEquals(Coordinates.create(2, 3), child3.getCoordinates());
     }
 
     @Test
@@ -97,9 +97,9 @@ public class ParentArrayNodeTest {
         ParentNode parent1 = NodeFactory.createParentNode(parent,1);
                 parent.addChild(parent1,"PARENT1");
         parent1.addChild(NodeFactory.createValueNode(parent1,Coordinates.create(0, 2)),"VALUE1");
-        parent1.addChild(NodeFactory.createValueNode(parent1,Coordinates.create(3, 5)),"VALUE2");
+        parent1.addChild(NodeFactory.createValueNode(parent1,Coordinates.create(2, 4)),"VALUE2");
 
-        parent.duplicateOccurs(6);
+        parent.duplicateOccurs(4);
 
         ParentNode parent2 = (ParentNode) parent.getChildArray()[1].getChilds().get("PARENT1");
         ParentNode parent3 = (ParentNode) parent.getChildArray()[2].getChilds().get("PARENT1");
@@ -108,11 +108,11 @@ public class ParentArrayNodeTest {
         Assert.assertNotNull(parent2);
         Assert.assertNotNull(parent3);
 
-        Assert.assertEquals(Coordinates.create(6, 8), ((ValueNode) parent2.getChilds().get("VALUE1")).getCoordinates());
-        Assert.assertEquals(Coordinates.create(9, 11), ((ValueNode) parent2.getChilds().get("VALUE2")).getCoordinates());
+        Assert.assertEquals(Coordinates.create(4, 6), ((ValueNode) parent2.getChilds().get("VALUE1")).getCoordinates());
+        Assert.assertEquals(Coordinates.create(6, 8), ((ValueNode) parent2.getChilds().get("VALUE2")).getCoordinates());
 
-        Assert.assertEquals(Coordinates.create(12, 14), ((ValueNode) parent3.getChilds().get("VALUE1")).getCoordinates());
-        Assert.assertEquals(Coordinates.create(15, 17), ((ValueNode) parent3.getChilds().get("VALUE2")).getCoordinates());
+        Assert.assertEquals(Coordinates.create(8, 10), ((ValueNode) parent3.getChilds().get("VALUE1")).getCoordinates());
+        Assert.assertEquals(Coordinates.create(10, 12), ((ValueNode) parent3.getChilds().get("VALUE2")).getCoordinates());
     }
 
     @Test
@@ -135,15 +135,15 @@ public class ParentArrayNodeTest {
                 parent_2.addChild(parent_2_2,"PARENT2_2");
 
         parent_1_1.addChild(NodeFactory.createValueNode(parent_1_1, Coordinates.create(0, 2)),"VALUE1");
-        parent_1_1.addChild(NodeFactory.createValueNode(parent_1_1, Coordinates.create(3, 5)),"VALUE2");
-        parent_1_2.addChild(NodeFactory.createValueNode(parent_1_2, Coordinates.create(6, 8)),"VALUE3");
-        parent_1_2.addChild(NodeFactory.createValueNode(parent_1_2, Coordinates.create(9, 11)),"VALUE4");
-        parent_2_1.addChild(NodeFactory.createValueNode(parent_2_1, Coordinates.create(12, 14)),"VALUE5");
-        parent_2_1.addChild(NodeFactory.createValueNode(parent_2_1, Coordinates.create(15, 18)),"VALUE6");
-        parent_2_2.addChild(NodeFactory.createValueNode(parent_2_2, Coordinates.create(19, 29)),"VALUE7");
-        parent_2_2.addChild(NodeFactory.createValueNode(parent_2_2, Coordinates.create(30, 42)),"VALUE8");
+        parent_1_1.addChild(NodeFactory.createValueNode(parent_1_1, Coordinates.create(2, 4)),"VALUE2");
+        parent_1_2.addChild(NodeFactory.createValueNode(parent_1_2, Coordinates.create(4, 6)),"VALUE3");
+        parent_1_2.addChild(NodeFactory.createValueNode(parent_1_2, Coordinates.create(6, 8)),"VALUE4");
+        parent_2_1.addChild(NodeFactory.createValueNode(parent_2_1, Coordinates.create(8, 10)),"VALUE5");
+        parent_2_1.addChild(NodeFactory.createValueNode(parent_2_1, Coordinates.create(10, 13)),"VALUE6");
+        parent_2_2.addChild(NodeFactory.createValueNode(parent_2_2, Coordinates.create(13, 23)),"VALUE7");
+        parent_2_2.addChild(NodeFactory.createValueNode(parent_2_2, Coordinates.create(23, 35)),"VALUE8");
 
-        parent.duplicateOccurs(43);
+        parent.duplicateOccurs(35);
 
         // We'll get directly the 8 values of each occurs and test them
 
@@ -165,23 +165,23 @@ public class ParentArrayNodeTest {
         ValueNode value_3_2_2_1 = (ValueNode) ((ParentNode) ((ParentNode) parent.getChildArray()[2].getChilds().get("PARENT2")).getChilds().get("PARENT2_2")).getChilds().get("VALUE7");
         ValueNode value_3_2_2_2 = (ValueNode) ((ParentNode) ((ParentNode) parent.getChildArray()[2].getChilds().get("PARENT2")).getChilds().get("PARENT2_2")).getChilds().get("VALUE8");
 
-        Assert.assertEquals(Coordinates.create(43, 45), value_2_1_1_1.getCoordinates());
-        Assert.assertEquals(Coordinates.create(46, 48), value_2_1_1_2.getCoordinates());
-        Assert.assertEquals(Coordinates.create(49, 51), value_2_1_2_1.getCoordinates());
-        Assert.assertEquals(Coordinates.create(52, 54), value_2_1_2_2.getCoordinates());
-        Assert.assertEquals(Coordinates.create(55, 57), value_2_2_1_1.getCoordinates());
-        Assert.assertEquals(Coordinates.create(58, 61), value_2_2_1_2.getCoordinates());
-        Assert.assertEquals(Coordinates.create(62, 72), value_2_2_2_1.getCoordinates());
-        Assert.assertEquals(Coordinates.create(73, 85), value_2_2_2_2.getCoordinates());
+        Assert.assertEquals(Coordinates.create(35, 37), value_2_1_1_1.getCoordinates());
+        Assert.assertEquals(Coordinates.create(37, 39), value_2_1_1_2.getCoordinates());
+        Assert.assertEquals(Coordinates.create(39, 41), value_2_1_2_1.getCoordinates());
+        Assert.assertEquals(Coordinates.create(41, 43), value_2_1_2_2.getCoordinates());
+        Assert.assertEquals(Coordinates.create(43, 45), value_2_2_1_1.getCoordinates());
+        Assert.assertEquals(Coordinates.create(45, 48), value_2_2_1_2.getCoordinates());
+        Assert.assertEquals(Coordinates.create(48, 58), value_2_2_2_1.getCoordinates());
+        Assert.assertEquals(Coordinates.create(58, 70), value_2_2_2_2.getCoordinates());
 
-        Assert.assertEquals(Coordinates.create(86, 88), value_3_1_1_1.getCoordinates());
-        Assert.assertEquals(Coordinates.create(89, 91), value_3_1_1_2.getCoordinates());
-        Assert.assertEquals(Coordinates.create(92, 94), value_3_1_2_1.getCoordinates());
-        Assert.assertEquals(Coordinates.create(95, 97), value_3_1_2_2.getCoordinates());
-        Assert.assertEquals(Coordinates.create(98, 100), value_3_2_1_1.getCoordinates());
-        Assert.assertEquals(Coordinates.create(101, 104), value_3_2_1_2.getCoordinates());
-        Assert.assertEquals(Coordinates.create(105, 115), value_3_2_2_1.getCoordinates());
-        Assert.assertEquals(Coordinates.create(116, 128), value_3_2_2_2.getCoordinates());
+        Assert.assertEquals(Coordinates.create(70, 72), value_3_1_1_1.getCoordinates());
+        Assert.assertEquals(Coordinates.create(72, 74), value_3_1_1_2.getCoordinates());
+        Assert.assertEquals(Coordinates.create(74, 76), value_3_1_2_1.getCoordinates());
+        Assert.assertEquals(Coordinates.create(76, 78), value_3_1_2_2.getCoordinates());
+        Assert.assertEquals(Coordinates.create(78, 80), value_3_2_1_1.getCoordinates());
+        Assert.assertEquals(Coordinates.create(80, 83), value_3_2_1_2.getCoordinates());
+        Assert.assertEquals(Coordinates.create(83, 93), value_3_2_2_1.getCoordinates());
+        Assert.assertEquals(Coordinates.create(93, 105), value_3_2_2_2.getCoordinates());
     }
 
     @Test
@@ -193,7 +193,7 @@ public class ParentArrayNodeTest {
                 parent.addChild(parent2,"ARRAY_CHILD");
 
         parent2.addChild(NodeFactory.createValueNode(parent2, Coordinates.create(0, 2)),"VALUE");
-        int nextStart = 3;
+        int nextStart = 2;
         nextStart = parent2.duplicateOccurs(nextStart);
         parent.duplicateOccurs(nextStart);
 
@@ -206,11 +206,11 @@ public class ParentArrayNodeTest {
         ValueNode value_6 = (ValueNode) ((ParentNode) ((ParentArrayNode) parent.getChildArray()[2].getChilds().get("ARRAY_CHILD")).getChildArray()[1]).getChilds().get("VALUE");
 
         Assert.assertEquals(Coordinates.create(0, 2), value_1.getCoordinates());
-        Assert.assertEquals(Coordinates.create(3, 5), value_2.getCoordinates());
-        Assert.assertEquals(Coordinates.create(6, 8), value_3.getCoordinates());
-        Assert.assertEquals(Coordinates.create(9, 11), value_4.getCoordinates());
-        Assert.assertEquals(Coordinates.create(12, 14), value_5.getCoordinates());
-        Assert.assertEquals(Coordinates.create(15, 17), value_6.getCoordinates());
+        Assert.assertEquals(Coordinates.create(2, 4), value_2.getCoordinates());
+        Assert.assertEquals(Coordinates.create(4, 6), value_3.getCoordinates());
+        Assert.assertEquals(Coordinates.create(6, 8), value_4.getCoordinates());
+        Assert.assertEquals(Coordinates.create(8, 10), value_5.getCoordinates());
+        Assert.assertEquals(Coordinates.create(10, 12), value_6.getCoordinates());
     }
 
 }

@@ -27,14 +27,14 @@ public class CoordinatesTest {
     }
 
     @Test
-    public void getSize_x2y9_shouldReturn8(){
+    public void getSize_x2y9_shouldReturn7(){
         Coordinates coords = Coordinates.create(2,9);
-        Assert.assertEquals(8,coords.getSize());
+        Assert.assertEquals(7,coords.getSize());
     }
 
     @Test
-    public void getSize_x0_y0_shouldReturn1(){
+    public void getSize_x0_y0_shouldReturn0(){
         Coordinates coords = Coordinates.create(0,0);
-        Assert.assertEquals(1,coords.getSize());
+        Assert.assertEquals(0,coords.getSize());
     }
 }

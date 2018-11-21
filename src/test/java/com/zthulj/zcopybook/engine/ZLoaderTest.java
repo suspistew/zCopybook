@@ -64,7 +64,7 @@ public class ZLoaderTest {
         ParentNode expected = NodeFactory.createRootNode();
         ParentNode parent = NodeFactory.createParentNode(expected, 1);
         expected.addChild(parent, "CLIENT");
-        parent.addChild(NodeFactory.createValueNode(parent, Coordinates.create(0, 17)), "CLIENT-NAME");
+        parent.addChild(NodeFactory.createValueNode(parent, Coordinates.create(0, 18)), "CLIENT-NAME");
 
         Assert.assertEquals(expected, node);
     }
@@ -82,13 +82,13 @@ public class ZLoaderTest {
         firstParent.addChild(commonParent, "CLIENT-COMMON-INFOS");
 
 
-        commonParent.addChild(NodeFactory.createValueNode(commonParent, Coordinates.create(0, 17)), "FIRSTNAME");
-        commonParent.addChild(NodeFactory.createValueNode(commonParent, Coordinates.create(18, 29)), "LASTNAME");
+        commonParent.addChild(NodeFactory.createValueNode(commonParent, Coordinates.create(0, 18)), "FIRSTNAME");
+        commonParent.addChild(NodeFactory.createValueNode(commonParent, Coordinates.create(18, 30)), "LASTNAME");
 
         ParentNode advancedParent = NodeFactory.createParentNode(firstParent, 3);
         firstParent.addChild(advancedParent, "CLIENT-ADVANCED-INFOS");
-        advancedParent.addChild(NodeFactory.createValueNode(advancedParent, Coordinates.create(30, 31)), "GENDER");
-        advancedParent.addChild(NodeFactory.createValueNode(advancedParent, Coordinates.create(32, 34)), "AGE");
+        advancedParent.addChild(NodeFactory.createValueNode(advancedParent, Coordinates.create(30, 32)), "GENDER");
+        advancedParent.addChild(NodeFactory.createValueNode(advancedParent, Coordinates.create(32, 35)), "AGE");
 
         Assert.assertEquals(rootExpected, node);
 
@@ -105,9 +105,9 @@ public class ZLoaderTest {
         ParentNode commonParent =NodeFactory.createParentNode(firstParent,3);
         firstParent.addChild(commonParent,"CLIENT-COMMON-INFOS");
 
-        commonParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(0, 17)),"FIRSTNAME");
-        commonParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(18, 29)),"LASTNAME");
-        commonParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(30, 30)),"GENDER");
+        commonParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(0, 18)),"FIRSTNAME");
+        commonParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(18, 30)),"LASTNAME");
+        commonParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(30, 31)),"GENDER");
 
         Assert.assertEquals(rootExpected, node);
 
@@ -123,8 +123,8 @@ public class ZLoaderTest {
         ParentArrayNode parentArray = NodeFactory.createParentNodeArray(firstParent,3,3);
         firstParent.addChild(parentArray,"CLIENT-COMMON-INFOS");
 
-        parentArray.addChild(NodeFactory.createValueNode(parentArray,Coordinates.create(0, 17)),"FIRSTNAME");
-        parentArray.addChild(NodeFactory.createValueNode(parentArray,Coordinates.create(18, 29)),"LASTNAME");
+        parentArray.addChild(NodeFactory.createValueNode(parentArray,Coordinates.create(0, 18)),"FIRSTNAME");
+        parentArray.addChild(NodeFactory.createValueNode(parentArray,Coordinates.create(18, 30)),"LASTNAME");
         parentArray.duplicateOccurs(30);
         Assert.assertEquals(node, rootExpected);
     }
@@ -140,10 +140,10 @@ public class ZLoaderTest {
         ParentNode secondParent = NodeFactory.createParentNode(firstParent,3);
                 firstParent.addChild(secondParent,"CLIENT-COMMON-INFOS");
 
-        secondParent.addChild(NodeFactory.createValueNode(secondParent, Coordinates.create(0, 17)),"FIRSTNAME");
-        secondParent.addChild(NodeFactory.createValueNode(secondParent, Coordinates.create(18, 29)), "LASTNAME");
-        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(30, 47)),"SOMETHING");
-        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(48, 65)),"ELSE");
+        secondParent.addChild(NodeFactory.createValueNode(secondParent, Coordinates.create(0, 18)),"FIRSTNAME");
+        secondParent.addChild(NodeFactory.createValueNode(secondParent, Coordinates.create(18, 30)), "LASTNAME");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(30, 48)),"SOMETHING");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(48, 66)),"ELSE");
 
         Assert.assertEquals(rootExpected, node);
 
@@ -161,13 +161,13 @@ public class ZLoaderTest {
         ParentArrayNode secondParent = NodeFactory.createParentNodeArray(firstParent,3,2);
         firstParent.addChild(secondParent,"CLIENT-COMMON-INFOS");
 
-        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.create(0, 17)),"FIRSTNAME");
-        secondParent.addChild(NodeFactory.createValueNode(secondParent, Coordinates.create(18, 29)), "LASTNAME");
+        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.create(0, 18)),"FIRSTNAME");
+        secondParent.addChild(NodeFactory.createValueNode(secondParent, Coordinates.create(18, 30)), "LASTNAME");
 
         secondParent.duplicateOccurs(30);
 
-        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(60, 77)),"SOMETHING");
-        firstParent.addChild(NodeFactory.createValueNode(firstParent, Coordinates.create(78, 95)),"ELSE");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(60, 78)),"SOMETHING");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent, Coordinates.create(78, 96)),"ELSE");
 
         Assert.assertEquals(rootExpected, node);
     }
@@ -183,10 +183,10 @@ public class ZLoaderTest {
         ParentNode secondParent = NodeFactory.createParentNode(firstParent,3);
         firstParent.addChild(secondParent,"CLIENT-COMMON-INFOS");
 
-        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.create(0, 17)),"FIRSTNAME");
-        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.create(18, 29)),"LASTNAME");
-        firstParent.addChild(NodeFactory.createValueNode(firstParent, Coordinates.create(30, 47)),"SOMETHING");
-        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(48, 65)),"ELSE" );
+        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.create(0, 18)),"FIRSTNAME");
+        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.create(18, 30)),"LASTNAME");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent, Coordinates.create(30, 48)),"SOMETHING");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(48, 66)),"ELSE" );
 
         Assert.assertEquals(rootExpected, node);
 
@@ -203,10 +203,10 @@ public class ZLoaderTest {
         ParentNode secondParent = NodeFactory.createParentNode(firstParent,3);
         firstParent.addChild(secondParent,"CLIENT-COMMON-INFOS");
 
-        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.create(0, 17)),"FIRSTNAME");
-        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.create(18, 29)),"LASTNAME");
-        firstParent.addChild(NodeFactory.createValueNode(firstParent, Coordinates.create(30, 47)),"SOMETHING");
-        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(48, 65)),"ELSE" );
+        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.create(0, 18)),"FIRSTNAME");
+        secondParent.addChild(NodeFactory.createValueNode(secondParent,Coordinates.create(18, 30)),"LASTNAME");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent, Coordinates.create(30, 48)),"SOMETHING");
+        firstParent.addChild(NodeFactory.createValueNode(firstParent,Coordinates.create(48, 66)),"ELSE" );
 
         Assert.assertEquals(rootExpected, node);
     }

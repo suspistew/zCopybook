@@ -15,12 +15,14 @@ public final class ZCopyBook<T> {
 
     private final RootNode<T> rootNode;
     private List<ValueNode<T>> valueNodes;
+    private int waitedLength;
 
     public static <T> ZCopyBook<T> from(RootNode<T> rootNodeCopybook){
         List<ValueNode<T>> allValueNodes = new ArrayList<>();
         rootNodeCopybook.getChilds().forEach(
                 (k,v) -> allValueNodes.addAll(v.getAllValueNodes())
         );
-        return new ZCopyBook<>(rootNodeCopybook,allValueNodes);
+        final int waited = allValueNodes.stream().mapToInt(e->e.getCoordinates().getSize()).sum();
+        return new ZCopyBook<>(rootNodeCopybook,allValueNodes, waited);
     }
 }
