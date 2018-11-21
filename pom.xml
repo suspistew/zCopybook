@@ -5,9 +5,8 @@
     <artifactId>zCopybook</artifactId>
     <groupId>com.github.zthulj</groupId>
     <version>1.0</version>
-
+    <name>zCopybbok</name>
     <modelVersion>4.0.0</modelVersion>
-
     <description>Library helping to convert positionnal inputs (cobol) to json, using a copybook format</description>
     <url>https://github.com/zthulj/zCopybook</url>
     <developers>
@@ -88,6 +87,10 @@
         <profile>
             <id>release</id>
             <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
                 <repository>
                     <id>ossrh</id>
                     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
@@ -110,21 +113,8 @@
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.0.1</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>1.5</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
