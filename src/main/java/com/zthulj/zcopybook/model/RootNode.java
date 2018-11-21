@@ -5,16 +5,17 @@ import com.zthulj.zcopybook.serializer.ParentNodeSerializer;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.util.LinkedHashMap;
+import java.io.Serializable;
+import java.util.Map;
 
 @JsonSerialize(using = ParentNodeSerializer.class)
 @EqualsAndHashCode(callSuper=true)
 @ToString
-public class RootNode<T> extends ParentNode<T>{
+public class RootNode<T extends Serializable> extends ParentNode<T>{
 
 	private static final long serialVersionUID = 1555257535111710430L;
 
-	public RootNode(LinkedHashMap<String, Node<T>> childs) {
+	public RootNode(Map<String, Node<T>> childs) {
 		super(null, childs, 0);
     }
 }

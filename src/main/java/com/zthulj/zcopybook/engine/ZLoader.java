@@ -7,7 +7,6 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -47,8 +46,8 @@ public final class ZLoader {
      * @return the root node containing the converted copybook
      * @throws IOException When copybook can't be read
      */
-    public ZCopyBook load(@NotNull final File copybook) throws IOException {
-        if (null == copybook)
+    public ZCopyBook load(final File copybook) throws IOException {
+        if (copybook == null)
             throw new IllegalArgumentException("copybook can't be null !");
 
         return this.load(copybook, StandardCharsets.UTF_8);
@@ -60,7 +59,7 @@ public final class ZLoader {
      * @return the root node containing the converted copybook
      * @throws IOException When copybook can't be read
      */
-    public ZCopyBook load(@NotNull final File copybook, @NotNull final Charset charset) throws IOException {
+    public ZCopyBook load(final File copybook, final Charset charset) throws IOException {
         if (null == copybook || null == charset)
             throw new IllegalArgumentException("copybook and charset can't be null !");
 
@@ -72,12 +71,13 @@ public final class ZLoader {
      * @param copybook a String containing the copybook format
      * @return the root node containing the converted copybook
      */
-    public ZCopyBook load(@NotNull final String copybook) {
+    public ZCopyBook load(final String copybook) {
+
         if (null == copybook)
             throw new IllegalArgumentException("copybook can't be null !");
 
-        if (logger.isDebugEnabled())
-            logger.debug(String.format("Started the conversion of the copybook : \n[\n%s\n]", copybook));
+        if(logger.isDebugEnabled())
+            logger.debug(String.format("Started the conversion of the copybook : %n[%n%s%n]", copybook));
 
         RootNode root = NodeFactory.createRootNode();
         Cursor cursor = new Cursor(root);
@@ -96,7 +96,7 @@ public final class ZLoader {
             if (inANodeToIgnore && levelNb <= levelToIgnore)
                 inANodeToIgnore = false;
 
-            Matcher redefineParentMatcher = this.redefineParentPattern.matcher(line);
+            Matcher redefineParentMatcher = ZLoader.redefineParentPattern.matcher(line);
 
             if (redefineParentMatcher.matches()) {
                 inANodeToIgnore = true;
@@ -185,7 +185,7 @@ public final class ZLoader {
     }
 
     private boolean handleOccursParent(final String line, Cursor cursor, final int levelNb) {
-        Matcher occursMatcher = this.parentArrayPattern.matcher(line);
+        Matcher occursMatcher = ZLoader.parentArrayPattern.matcher(line);
         if (occursMatcher.matches()) {
             int occursNb = Integer.parseInt(occursMatcher.group(7));
             ParentNode newParent = NodeFactory.createParentNodeArray(cursor.lastParent, levelNb, occursNb);
@@ -197,7 +197,7 @@ public final class ZLoader {
     }
 
     private void handleValue(final String line, Cursor cursor) {
-        Matcher valueMatcher = this.simpleValuePattern.matcher(line);
+        Matcher valueMatcher = ZLoader.simpleValuePattern.matcher(line);
 
         if (valueMatcher.matches()) {
             cursor.cursorPosition = addValueNode(cursor.lastParent, cursor.cursorPosition, valueMatcher);
@@ -211,10 +211,10 @@ public final class ZLoader {
 
         String dataType = valueMatcher.group(7);
 
-        Matcher defaultMatcher = this.picX_n_Pattern.matcher(dataType);
-        Matcher signedIntMatcher = this.picS9_n_Pattern.matcher(dataType);
-        Matcher signedFloatMatcher = this.picS9_n_v99_Pattern.matcher(dataType);
-        Matcher picXMatcher = this.picX_pattern.matcher(dataType);
+        Matcher defaultMatcher = ZLoader.picX_n_Pattern.matcher(dataType);
+        Matcher signedIntMatcher = ZLoader.picS9_n_Pattern.matcher(dataType);
+        Matcher signedFloatMatcher = ZLoader.picS9_n_v99_Pattern.matcher(dataType);
+        Matcher picXMatcher = ZLoader.picX_pattern.matcher(dataType);
 
         if (defaultMatcher.matches()) {
             fieldSize = Integer.parseInt(defaultMatcher.group(3));

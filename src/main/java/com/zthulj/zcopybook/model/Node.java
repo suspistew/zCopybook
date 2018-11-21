@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @ToString(exclude="parentNode")
 @EqualsAndHashCode(exclude="parentNode")
-public abstract class Node<T> implements Serializable {
+public abstract class Node<T extends Serializable> implements Serializable {
 
 	private static final long serialVersionUID = -3514066933920187128L;
 	private final ParentNode<T> parentNode;

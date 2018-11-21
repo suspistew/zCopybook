@@ -7,8 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,14 +16,14 @@ import java.util.Map;
 @Getter
 @JsonSerialize(using = ParentNodeSerializer.class)
 @ToString
-public class ParentNode<T> extends Node<T> {
+public class ParentNode<T extends Serializable> extends Node<T> {
 
 	private static final long serialVersionUID = -7011113266458098086L;
-	private final LinkedHashMap<String,Node<T>> childs;
+	private final Map<String,Node<T>> childs;
     private final int levelNumber;
 
 
-    public ParentNode(ParentNode<T> parent, LinkedHashMap<String,Node<T>> childs, int levelNumber) {
+    public ParentNode(ParentNode<T> parent, Map<String,Node<T>> childs, int levelNumber) {
 		super(parent, true);
 		this.childs=childs;
 		this.levelNumber=levelNumber;

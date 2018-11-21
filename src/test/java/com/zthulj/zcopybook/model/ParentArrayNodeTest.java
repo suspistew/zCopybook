@@ -11,7 +11,7 @@ public class ParentArrayNodeTest {
     @Test
     public void isParent_ParentArrayNode_shouldReturnFalse() {
         ParentNode root = NodeFactory.createRootNode();
-        ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 1);
+        ParentArrayNode<String> parent = NodeFactory.createParentNodeArray(root, 0, 1);
 
         Assert.assertEquals(true, parent.isParent());
     }
@@ -19,7 +19,7 @@ public class ParentArrayNodeTest {
     @Test
     public void constructor_occurs3_shouldHave3ArrayInitialized() {
         ParentNode root = NodeFactory.createRootNode();
-        ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
+        ParentArrayNode<String> parent = NodeFactory.createParentNodeArray(root, 0, 3);
 
         Assert.assertEquals(3, parent.getChildArray().length);
         Assert.assertNotNull(parent.getChildArray()[0]);
@@ -30,7 +30,7 @@ public class ParentArrayNodeTest {
     @Test
     public void addValueChild_occurs3_shouldAddValueInTheFirstArrayNode() {
         ParentNode root = NodeFactory.createRootNode();
-        ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
+        ParentArrayNode<String> parent = NodeFactory.createParentNodeArray(root, 0, 3);
 
         parent.addChild(NodeFactory.createValueNode(parent, Coordinates.create(0, 1)),"TEST");
 
@@ -43,7 +43,7 @@ public class ParentArrayNodeTest {
     @Test
     public void addParentNode_occurs3_shouldAddTheParentInTheFirstArrayNode() {
         ParentNode root = NodeFactory.createRootNode();
-        ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
+        ParentArrayNode<String> parent = NodeFactory.createParentNodeArray(root, 0, 3);
 
         ParentNode parent1 = NodeFactory.createParentNode(parent,1);
         parent.addChild(parent1,"PARENT");
@@ -58,7 +58,7 @@ public class ParentArrayNodeTest {
     @Test
     public void addParentArrayNode_occurs3_shouldAddTheParentArrayInTheFirstArrayNode() {
         ParentNode root = NodeFactory.createRootNode();
-        ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
+        ParentArrayNode<String> parent = NodeFactory.createParentNodeArray(root, 0, 3);
 
 
         ParentArrayNode parent1 = NodeFactory.createParentNodeArray(parent,1,2);
@@ -75,7 +75,7 @@ public class ParentArrayNodeTest {
     @Test
     public void populateOccurs_occurs3OneChild_shouldPopulateOccursWithOKCoords() {
         ParentNode root = NodeFactory.createRootNode();
-        ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
+        ParentArrayNode<String> parent = NodeFactory.createParentNodeArray(root, 0, 3);
         parent.addChild(NodeFactory.createValueNode(parent,Coordinates.create(0, 1)),"TEST");
 
         parent.duplicateOccurs(1);
@@ -92,7 +92,7 @@ public class ParentArrayNodeTest {
     @Test
     public void populateOccurs_3occurs_AParentWithTwoChilds_shouldPopulateOccursWithOKCoords() {
         ParentNode root = NodeFactory.createRootNode();
-        ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
+        ParentArrayNode<String> parent = NodeFactory.createParentNodeArray(root, 0, 3);
 
         ParentNode parent1 = NodeFactory.createParentNode(parent,1);
                 parent.addChild(parent1,"PARENT1");
@@ -118,20 +118,20 @@ public class ParentArrayNodeTest {
     @Test
     public void populateOccurs_3occurs_AParentWithTwoParentChildWithTwoParentChildWithTwoChilds_shouldPopulateOccursWithOKCoords() {
         ParentNode root = NodeFactory.createRootNode();
-        ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root, 0, 3);
+        ParentArrayNode<String> parent = NodeFactory.createParentNodeArray(root, 0, 3);
 
-        ParentNode<Object> parent_1 = NodeFactory.createParentNode(parent,0);
+        ParentNode<String> parent_1 = NodeFactory.createParentNode(parent,0);
                 parent.addChild(parent_1,"PARENT1");
-        ParentNode<Object> parent_2 = NodeFactory.createParentNode(parent,0);
+        ParentNode<String> parent_2 = NodeFactory.createParentNode(parent,0);
                 parent.addChild(parent_2,"PARENT2");
 
-        ParentNode<Object> parent_1_1 = NodeFactory.createParentNode(parent_1,0);
+        ParentNode<String> parent_1_1 = NodeFactory.createParentNode(parent_1,0);
                 parent_1.addChild(parent_1_1,"PARENT1_1");
-        ParentNode<Object> parent_1_2 = NodeFactory.createParentNode(parent_1,0);
+        ParentNode<String> parent_1_2 = NodeFactory.createParentNode(parent_1,0);
                 parent_1.addChild(parent_1_2,"PARENT1_2");
-        ParentNode<Object> parent_2_1 = NodeFactory.createParentNode(parent_2,0);
+        ParentNode<String> parent_2_1 = NodeFactory.createParentNode(parent_2,0);
                 parent_2.addChild(parent_2_1,"PARENT2_1");
-        ParentNode<Object> parent_2_2 = NodeFactory.createParentNode(parent_2,0);
+        ParentNode<String> parent_2_2 = NodeFactory.createParentNode(parent_2,0);
                 parent_2.addChild(parent_2_2,"PARENT2_2");
 
         parent_1_1.addChild(NodeFactory.createValueNode(parent_1_1, Coordinates.create(0, 2)),"VALUE1");
@@ -187,9 +187,9 @@ public class ParentArrayNodeTest {
     @Test
     public void populateOccurs_3occurs_ParentChildWithArrayParentChildWithAChildAnd2occurs_shouldPopulateOccursWithOKCoords() {
         ParentNode root = NodeFactory.createRootNode();
-        ParentArrayNode<Object> parent = NodeFactory.createParentNodeArray(root,0,3);
+        ParentArrayNode<String> parent = NodeFactory.createParentNodeArray(root,0,3);
                 root.addChild(parent,"ARRAY");
-        ParentArrayNode<Object> parent2 = NodeFactory.createParentNodeArray(root,1,2);
+        ParentArrayNode<String> parent2 = NodeFactory.createParentNodeArray(root,1,2);
                 parent.addChild(parent2,"ARRAY_CHILD");
 
         parent2.addChild(NodeFactory.createValueNode(parent2, Coordinates.create(0, 2)),"VALUE");

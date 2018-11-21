@@ -9,8 +9,8 @@ public class ValueNodeTest {
 
     @Test
     public void isParent_valueNode_shouldReturnFalse(){
-        ParentNode<Object> parent = NodeFactory.createRootNode();
-        Node<Object> child = NodeFactory.createValueNode(parent,  Coordinates.create(0,1));
+        ParentNode<String> parent = NodeFactory.createRootNode();
+        Node<String> child = NodeFactory.createValueNode(parent,  Coordinates.create(0,1));
         Assert.assertEquals(false, child.isParent());
     }
 }

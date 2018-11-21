@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(callSuper=true)
 @ToString
-public final class ValueNode<T> extends Node<T> {
+public final class ValueNode<T extends Serializable> extends Node<T> {
 
 	private static final long serialVersionUID = -3833993476849963456L;
 
@@ -24,7 +25,7 @@ public final class ValueNode<T> extends Node<T> {
     private final Coordinates coordinates;
     private final ValueType valueType;
 
-    public static enum ValueType{
+    public enum ValueType{
         STRING, SIGNED_INT, SIGNED_FLOAT
     }
 

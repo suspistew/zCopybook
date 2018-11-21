@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import java.util.Map;
 @Getter
 @JsonSerialize(using = ParentArrayNodeSerializer.class)
 @ToString
-public class ParentArrayNode<T> extends ParentNode<T> {
+public class ParentArrayNode<T extends Serializable> extends ParentNode<T> {
 
 	private static final long serialVersionUID = 943387055163029210L;
 
