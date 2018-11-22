@@ -5,7 +5,7 @@
     <artifactId>zCopybook</artifactId>
     <groupId>com.github.zthulj</groupId>
     <version>1.0</version>
-    <name>zCopybbok</name>
+    <name>zCopybook</name>
     <modelVersion>4.0.0</modelVersion>
     <description>Library helping to convert positionnal inputs (cobol) to json, using a copybook format</description>
     <url>https://github.com/zthulj/zCopybook</url>
