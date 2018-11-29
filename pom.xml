@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <artifactId>zCopybook</artifactId>
+    <artifactId>zcopybook</artifactId>
     <groupId>com.github.zthulj</groupId>
     <version>1.0</version>
-    <name>zCopybbok</name>
+    <name>zcopybook</name>
     <modelVersion>4.0.0</modelVersion>
     <description>Library helping to convert positionnal inputs (cobol) to json, using a copybook format</description>
     <url>https://github.com/zthulj/zCopybook</url>
